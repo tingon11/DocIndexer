@@ -1,6 +1,6 @@
 # DocIndexer — Copyright (C) 2026 Andrea Cumini <andrea@osintinfo.net> — www.osintinfo.net
 # Licenza GNU AGPL-3.0 con i termini aggiuntivi del file NOTICE (attribuzione all'autore).
-"""Termini d'uso ed esclusione di responsabilità, nelle 7 lingue dell'interfaccia (come in DroidSnex).
+"""Termini d'uso ed esclusione di responsabilità, nelle 8 lingue dell'interfaccia (come in DroidSnex).
 
 Vengono mostrati alla prima apertura (welcome.py), dopo la scelta della lingua; l'accettazione viene
 salvata in config.json con la versione del testo (TERMS_VERSION) e la data: se la versione cambia,
@@ -12,6 +12,8 @@ vengono richiesti di nuovo. Il file TERMS.md del progetto è generato da questo 
     labels(lang)  -> (titolo, Accetto, Rifiuto, Scegli la lingua, nota)
 """
 from __future__ import annotations
+
+from .terms_pl import TEXT as _PL, LABELS as _PL_LABELS
 
 TERMS_VERSION = "1.0"            # da aumentare quando il testo cambia in modo sostanziale
 TERMS_DATE = "2026-11-20"
@@ -226,10 +228,11 @@ Këto kushte mund të përditësohen në versionet e mëvonshme të softuerit; n
 Duke shtypur "Pranoj" konfirmoni se i keni lexuar dhe pranuar të gjitha pikat e mësipërme, se me DocIndexer indeksoni vetëm skedarë që keni të drejtë t'i përpunoni, dhe se merrni përsipër çdo përgjegjësi për përdorimin që bëni.
 """
 
-TEXTS = {"it": _IT, "en": _EN, "fr": _FR, "de": _DE, "es": _ES, "el": _EL, "sq": _SQ}
+TEXTS = {"it": _IT, "en": _EN, "fr": _FR, "de": _DE, "es": _ES, "el": _EL, "sq": _SQ, "pl": _PL}
 
 # etichette nella lingua dei termini (non passano da tr: seguono la lingua scelta nella finestra)
 LABELS = {
+    "pl": _PL_LABELS,
     "it": ("Termini d'uso", "Accetto", "Rifiuto", "Scegli la lingua",
            "Leggi i termini fino in fondo: con Rifiuto il programma si chiude."),
     "en": ("Terms of use", "I accept", "I decline", "Choose your language",

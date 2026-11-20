@@ -1,6 +1,6 @@
 # DocIndexer
 
-[English](README.md) · **Italiano**
+[English](README.md) · [Polski](README.pl.md) · **Italiano**
 
 Indicizzatore di documenti in background per Windows. Parte con Windows, resta nell'area di notifica e tiene
 un indice del testo dei file delle cartelle che scegli: documenti, fogli di calcolo, presentazioni, PDF, foto

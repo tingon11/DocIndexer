@@ -7,7 +7,7 @@ I testi nel codice sono in italiano e passano da tr():
     tr("Connessioni")                       -> "Connections" in inglese
     tr("fidata: {d}", d="example.com")      -> segnaposto con str.format
 
-Le traduzioni stanno in i18n_strings.py (una riga per testo, una colonna per lingua: ordine in ORDER).
+Le traduzioni stanno in i18n_strings*.py (ordine in ORDER); il catalogo polacco è in i18n_pl.py.
 Se un testo non è tradotto si usa l'italiano.
 """
 from __future__ import annotations
@@ -15,12 +15,13 @@ from __future__ import annotations
 from .i18n_strings import ORDER, STRINGS
 from .i18n_strings_daemon import STRINGS as _DAEMON
 from .i18n_strings_extra import STRINGS as _EXTRA
+from .i18n_pl import STRINGS as _POLISH
 
 STRINGS = {**STRINGS, **_DAEMON, **_EXTRA}
 
 LANGUAGES = {
     "it": "Italiano", "en": "English", "fr": "Français", "de": "Deutsch", "es": "Español",
-    "el": "Ελληνικά", "sq": "Shqip",
+    "el": "Ελληνικά", "sq": "Shqip", "pl": "Polski",
 }
 _current = "it"
 
@@ -36,7 +37,9 @@ def language() -> str:
 
 def tr(text: str, /, **kw) -> str:
     # "/": il testo è solo posizionale, così un segnaposto può chiamarsi {text} (es. tr("...{text}", text=x))
-    if _current != "it":
+    if _current == "pl":
+        text = _POLISH.get(text, text)
+    elif _current != "it":
         row = STRINGS.get(text)
         if row:
             t = row[ORDER.index(_current)]
