@@ -11,6 +11,7 @@ dist/
 *.spec
 
 # Runtime data: database, index, caches, logs
+GARBAGE/
 data/
 cache/
 *.db

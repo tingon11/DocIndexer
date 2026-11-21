@@ -19,7 +19,7 @@ from PIL import Image
 
 from .config import RESOURCE_LEVELS, AppConfig, portable
 from .db import Database
-from . import __version__, ocr, preview, theme, tools
+from . import __version__, ocr, preview, shellmenu, theme, tools
 from .i18n import LANGUAGES, language, set_language, tr
 from .textnorm import fold
 from . import daemon_ui, frameless
@@ -1333,8 +1333,9 @@ class SearchPage(ctk.CTkFrame):
         self._rx_proc = None
         self._rx_groups: list = []
         self._reselect = None
-        self.notice = ctk.CTkLabel(bar, text="", text_color=theme.WARN, anchor="w")
-        self.notice.pack(side="left", padx=12, fill="x", expand=True)
+        self.notice = ctk.CTkLabel(bar, text="", text_color=theme.WARN, anchor="w", corner_radius=6)
+        self.notice.pack(side="left", padx=12)
+        self._notice_job = None
         self.update_saved_badge()
 
         sash_bg = theme.BG
@@ -1481,7 +1482,7 @@ class SearchPage(ctk.CTkFrame):
             self._rows = [x for x in self._rows if x[0]["id"] in new_ids]
             self._build_ext_bar(reset=True)
             self.show_results()
-            self.notice.configure(text=tr("Solo i file nuovi della ricerca salvata «{name}»", name=item["name"]))
+            self.set_notice(tr("Solo i file nuovi della ricerca salvata «{name}»", name=item["name"]))
         self.app.saved.mark_seen(item["id"])
         self.update_saved_badge()
 
@@ -1606,6 +1607,33 @@ class SearchPage(ctk.CTkFrame):
             tb.tag_add(tag, f"{ln}.0", f"{ln}.end")
             gi += 1
 
+    NOTICE_ALERT_BG = "#D32F2F"   # rosso pieno: leggibile con testo bianco nel tema chiaro e scuro
+
+    def set_notice(self, text: str = "", alert: bool = False):
+        """Avviso accanto a "Esporta risultati...". alert=True: testo bianco su sfondo rosso,
+        con qualche lampeggio quando compare (es. risultati mostrati con 1 errore tollerato)."""
+        if self._notice_job is not None:
+            try:
+                self.after_cancel(self._notice_job)
+            except tk.TclError:
+                pass
+            self._notice_job = None
+        if not alert or not text:
+            self.notice.configure(text=text, fg_color="transparent", text_color=theme.WARN)
+            return
+        self.notice.configure(text=f"  ⚠  {text}  ", fg_color=self.NOTICE_ALERT_BG, text_color="#FFFFFF")
+        self._blink_notice(6)
+
+    def _blink_notice(self, left: int):
+        """Alterna rosso pieno / testo rosso su sfondo trasparente; finisce sempre sul rosso pieno."""
+        if left <= 0 or not self.winfo_exists():
+            self._notice_job = None
+            return
+        on = left % 2 == 0
+        self.notice.configure(fg_color="transparent" if on else self.NOTICE_ALERT_BG,
+                              text_color=self.NOTICE_ALERT_BG if on else "#FFFFFF")
+        self._notice_job = self.after(280, lambda: self._blink_notice(left - 1))
+
     def search(self):
         q = self.query.get("1.0", "end").strip()
         self.color_query()
@@ -1620,7 +1648,7 @@ class SearchPage(ctk.CTkFrame):
         except ValueError as exc:
             messagebox.showerror(tr("Ricerca"), str(exc))
             return
-        self.notice.configure(text="")
+        self.set_notice("")
         self._cancel_regex()
         if self.regex.get():
             return self.search_regex(q, folders)
@@ -1635,7 +1663,7 @@ class SearchPage(ctk.CTkFrame):
         self.groups = res.groups
         self._auto_fuzzy = res.fuzzy_used
         if res.fuzzy_used:
-            self.notice.configure(text=tr("Nessun risultato esatto: mostrati quelli con 1 errore di battitura o di OCR"))
+            self.set_notice(tr("Nessun risultato esatto: mostrati quelli con 1 errore di battitura o di OCR"), alert=True)
         self._rows = res.rows
         self._sort = None
         self._build_ext_bar(reset=True)
@@ -1864,7 +1892,7 @@ class SearchPage(ctk.CTkFrame):
             messagebox.showerror(tr("Ricerca"), tr("Ricerca non valida:\n{exc}", exc=status[1]))
             return
         if status is None:              # processo chiuso prima della fine (Ferma ricerca)
-            self.notice.configure(text=tr("Ricerca regex fermata: mostrati i risultati trovati fin qui"))
+            self.set_notice(tr("Ricerca regex fermata: mostrati i risultati trovati fin qui"))
         self._regex_take_rows()
         if self._sort is None:          # dal più ricco di occorrenze (se non hai già scelto un ordine)
             self._rows.sort(key=lambda x: -x[0]["score"])
@@ -2405,6 +2433,18 @@ class SettingsPage(ctk.CTkFrame):
                         variable=self.autostart, command=lambda: app.set_autostart(self.autostart.get())).grid(
             row=r, column=0, columnspan=3, sticky="w", pady=4)
         r += 1
+        # voce del tasto destro di Esplora file: effetto immediato, lo stato è quello del registro di Windows
+        self.shellmenu = tk.BooleanVar(value=shellmenu.enabled())
+        ctk.CTkCheckBox(form, text=tr("Aggiungi la voce «Aggiungi a DocIndexer» al menu del tasto destro delle "
+                                      "cartelle in Esplora file"),
+                        variable=self.shellmenu, command=lambda: app.set_context_menu(self.shellmenu.get())).grid(
+            row=r, column=0, columnspan=3, sticky="w", pady=4)
+        r += 1
+        ctk.CTkLabel(form, text=tr("Su Windows 11 la voce è in «Mostra altre opzioni» (o Maiusc+F10). Non servono "
+                                   "permessi di amministratore."),
+                     text_color=theme.TEXT_DIM, wraplength=760, justify="left").grid(
+            row=r, column=0, columnspan=3, sticky="w")
+        r += 1
         section("Ricerca rapida")
         ctk.CTkLabel(form, text=tr("Apre una barra di ricerca sopra qualsiasi programma. Esempi: ctrl+alt+d, ctrl+alt+space, "
                                    "ctrl+shift+f, win+alt+d, ctrl+alt+f9. Vuoto = disattivata. Si apre anche dal "
@@ -2639,8 +2679,10 @@ class App(ctk.CTk):
     MENU = (("monitor", "Monitor"), ("search", "Ricerca"), ("important", "Importanti"),
             ("documents", "Documenti"), ("duplicates", "Duplicati"), ("settings", "Impostazioni"))
 
-    def __init__(self, background: bool = False):
+    def __init__(self, background: bool = False, add_folder: str | None = None):
         self.cfg = AppConfig.load()
+        # cartella da aggiungere chiesta dal tasto destro di Esplora file (--add-folder), con nessun DocIndexer aperto
+        self.pending_folder = add_folder
         self.indexer: Indexer | None = None
         self.tray = None
         self.saved = searches.SavedSearches()      # ricerche salvate (con avviso sui file nuovi)
@@ -2803,6 +2845,7 @@ class App(ctk.CTk):
         set_language(code)
         self.cfg.language = code
         self.save_config()
+        shellmenu.refresh()                # testo del tasto destro di Esplora file nella nuova lingua
         # ricostruisce l'interfaccia nella nuova lingua, restando sulla stessa scheda
         for w in self.winfo_children():
             if not isinstance(w, tk.Toplevel):
@@ -2877,17 +2920,23 @@ class App(ctk.CTk):
         if not self.ensure_db(quiet=False):
             return
         self.single = daemon_ui.SingleInstance()
-        if not self.single.acquire(lambda: self.call_in_gui(self.show_window)):
-            # c'è già un DocIndexer attivo: gli si chiede di mostrarsi e questa istanza esce
+        pending, self.pending_folder = self.pending_folder, None
+        hello = daemon_ui.add_message(pending) if pending else b"show"
+        if not self.single.acquire(lambda: self.call_in_gui(self.show_window),
+                                   on_add=lambda p: self.call_in_gui(self.add_folder, p), hello=hello):
+            # c'è già un DocIndexer attivo: gli si chiede di mostrarsi (o di aggiungere la cartella) e questa esce
             self.destroy()
             return
+        shellmenu.refresh()      # voce del tasto destro: comando aggiornato se l'exe è stato spostato
         self.tray = daemon_ui.Tray(self)
         self.tray.start()
         self.start_hotkey()
         # mentre si usa la finestra (ricerca, anteprime, ricerca rapida) l'indicizzazione lascia il passo
         for seq in ("<KeyPress>", "<ButtonPress>", "<MouseWheel>"):
             self.bind_all(seq, self._user_input, add="+")
-        if not self.cfg.watch_dirs:
+        if pending and self.add_folder(pending):
+            pass                 # cartella aggiunta dal tasto destro: l'indicizzazione è già partita
+        elif not self.cfg.watch_dirs:
             self.show_window()
             daemon_ui.SetupWizard(self, self.cfg, self.fonts, self._setup_done)
         else:
@@ -3062,6 +3111,80 @@ class App(ctk.CTk):
             self.single = None
         subprocess.Popen(cmd, close_fds=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         self.quit_app()
+
+    # ------------------------------------------------ tasto destro di Esplora file
+    def set_context_menu(self, enabled: bool) -> None:
+        """Voce «Aggiungi a DocIndexer» del tasto destro attivata / disattivata subito (Impostazioni)."""
+        if not shellmenu.set_enabled(bool(enabled)):
+            messagebox.showerror("DocIndexer", tr("Impossibile modificare il menu del tasto destro di Esplora file."))
+        settings = getattr(self, "pages", {}).get("settings")
+        if settings is not None and settings.winfo_exists():
+            settings.shellmenu.set(shellmenu.enabled())
+
+    def add_folder(self, path: str) -> bool:
+        """Aggiunge una cartella alle cartelle monitorate (tasto destro «Aggiungi a DocIndexer») e la indicizza.
+        Niente doppioni: se c'è già, o è dentro una cartella monitorata, si avvisa e basta; se invece contiene
+        cartelle già monitorate prende il loro posto. True se la configurazione è cambiata."""
+        self.show_window()
+        title = tr("Aggiungi a DocIndexer")
+        path = os.path.normpath(os.path.abspath(path))
+        if not os.path.isdir(path):
+            messagebox.showerror(title, tr("Cartella non trovata:\n{path}", path=path))
+            return False
+
+        def key(d: str) -> str:
+            return os.path.normcase(os.path.normpath(d))
+
+        def inside(child: str, parent: str) -> bool:
+            return key(child).startswith(key(parent).rstrip(os.sep) + os.sep)
+
+        dirs = list(self.cfg.watch_dirs)
+        excluded = [e for e in self.cfg.exclude_paths if key(e) == key(path)]
+        if any(key(d) == key(path) for d in dirs):
+            messagebox.showinfo(title, tr("La cartella è già monitorata:\n{path}", path=path))
+            return False
+        parent = next((d for d in dirs if inside(path, d)), None)
+        children = [d for d in dirs if inside(d, path)]
+        if parent and not excluded:
+            messagebox.showinfo(title, tr("La cartella è già compresa in una cartella monitorata:\n{parent}",
+                                          parent=parent))
+            return False
+        if parent:
+            # era tra le sottocartelle escluse di una cartella monitorata: basta togliere l'esclusione
+            msg = tr("La cartella era tra le sottocartelle escluse: ora viene indicizzata.\n{path}", path=path)
+        else:
+            dirs = [d for d in dirs if d not in children] + [path]
+            msg = tr("Cartella aggiunta alle cartelle monitorate:\n{path}\n\nL'indicizzazione inizia subito.",
+                     path=path)
+            if children:
+                msg += "\n\n" + tr("Le cartelle monitorate che contiene ({n}) ora sono comprese in questa.",
+                                    n=len(children))
+        self.cfg.watch_dirs = dirs
+        self.cfg.exclude_paths = [e for e in self.cfg.exclude_paths if key(e) != key(path)]
+        self.save_config()
+        self._sync_settings_folders(path, children)
+        self._run_indexer()
+        messagebox.showinfo(title, msg)
+        return True
+
+    def _sync_settings_folders(self, path: str, children: list[str]) -> None:
+        """La pagina Impostazioni mostra la nuova cartella. Con modifiche non salvate non si perde niente:
+        la cartella entra nel modulo e il resto delle modifiche resta da salvare."""
+        settings = getattr(self, "pages", {}).get("settings")
+        if settings is None or not settings.winfo_exists():
+            return
+        if not settings.dirty():
+            self._rebuild_settings()
+            return
+        key = lambda d: os.path.normcase(os.path.normpath(d))  # noqa: E731
+        drop = {key(c) for c in children} | {key(path)}
+        settings.folders.set([d for d in settings.folders.get() if key(d) not in drop] + list(
+            d for d in self.cfg.watch_dirs if key(d) == key(path)))
+        settings.excluded.set([e for e in settings.excluded.get() if key(e) != key(path)])
+        saved = list(settings._saved)
+        saved[0], saved[1] = tuple(self.cfg.watch_dirs), tuple(self.cfg.exclude_paths)
+        settings._saved = tuple(saved)
+        self.pages["search"].refresh_folders()
 
     def set_autostart(self, enabled: bool) -> None:
         """Avvio con Windows attivato / disattivato subito (Monitor, menu dell'icona, Impostazioni)."""
@@ -3274,4 +3397,7 @@ class App(ctk.CTk):
 
 
 def main():
-    App(background="--background" in sys.argv).mainloop()
+    folder = shellmenu.folder_from_argv(sys.argv)
+    if folder and daemon_ui.send_to_running(daemon_ui.add_message(folder)):
+        return       # tasto destro «Aggiungi a DocIndexer»: la cartella va al DocIndexer già aperto
+    App(background="--background" in sys.argv and not folder, add_folder=folder).mainloop()

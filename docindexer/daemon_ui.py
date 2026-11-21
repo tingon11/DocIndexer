@@ -21,7 +21,7 @@ from .config import (BASE_DIR, DEFAULT_EXCLUDE, DEFAULT_EXCLUDE_DIRS, DEFAULT_IN
 from .i18n import tr
 
 APP_NAME = "DocIndexer"
-# porta locale usata solo per "mostra la finestra" dalla seconda istanza; ogni cartella dati
+# porta locale per i messaggi della seconda istanza ("mostra", "aggiungi cartella"); ogni cartella dati
 # (DOCINDEXER_HOME) ha la sua, così un profilo di prova non si confonde con quello principale
 INSTANCE_PORT = 47613 + (sum(map(ord, os.environ.get("DOCINDEXER_HOME", ""))) % 997 + 1
                          if os.environ.get("DOCINDEXER_HOME") else 0)
@@ -199,25 +199,54 @@ def autostart_enabled() -> bool:
 
 
 # ======================================================================== istanza unica
+ADD_PREFIX = b"add\n"
+
+
+def add_message(path: str) -> bytes:
+    return ADD_PREFIX + path.encode("utf-8")
+
+
+def _read_all(conn, limit: int = 65536) -> bytes:
+    conn.settimeout(2)
+    data = b""
+    try:
+        while len(data) < limit:
+            chunk = conn.recv(4096)
+            if not chunk:
+                break
+            data += chunk
+    except OSError:
+        pass
+    return data
+
+
+def send_to_running(msg: bytes) -> bool:
+    """Passa un messaggio al DocIndexer già aperto. False se non ce n'è uno in ascolto."""
+    try:
+        with socket.create_connection(("127.0.0.1", INSTANCE_PORT), timeout=2) as c:
+            c.sendall(msg)
+            c.shutdown(socket.SHUT_WR)
+        return True
+    except OSError:
+        return False
+
+
 class SingleInstance:
-    """La prima istanza ascolta su una porta locale; una seconda istanza le chiede di mostrarsi ed esce."""
+    """La prima istanza ascolta su una porta locale; una seconda istanza le passa un messaggio ed esce:
+    "show" (mostrati) oppure "add" + cartella (clic destro «Aggiungi a DocIndexer» in Esplora file)."""
 
     def __init__(self):
         self.sock = None
 
-    def acquire(self, on_show) -> bool:
+    def acquire(self, on_show, on_add=None, hello: bytes = b"show") -> bool:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             s.bind(("127.0.0.1", INSTANCE_PORT))
         except OSError:
             s.close()
-            try:
-                with socket.create_connection(("127.0.0.1", INSTANCE_PORT), timeout=2) as c:
-                    c.sendall(b"show")
-            except OSError:
-                pass
+            send_to_running(hello)
             return False
-        s.listen(2)
+        s.listen(4)
         self.sock = s
 
         def serve():
@@ -227,8 +256,12 @@ class SingleInstance:
                 except OSError:
                     return
                 with conn:
-                    if conn.recv(16) == b"show":
-                        on_show()
+                    msg = _read_all(conn)
+                if msg == b"show":
+                    on_show()
+                elif msg.startswith(ADD_PREFIX):
+                    path = msg[len(ADD_PREFIX):].decode("utf-8", "replace")
+                    (on_add or (lambda _p: on_show()))(path)
 
         threading.Thread(target=serve, name="instance", daemon=True).start()
         return True
@@ -891,6 +924,11 @@ class FolderList(ctk.CTkFrame):
 
     def get(self) -> list[str]:
         return list(self.lb.get(0, "end"))
+
+    def set(self, values: list[str]) -> None:
+        self.lb.delete(0, "end")
+        for v in values:
+            self.lb.insert("end", v)
 
 
 def overlapping(dirs: list[str]) -> list[str]:
