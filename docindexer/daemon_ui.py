@@ -352,10 +352,14 @@ class Pie(tk.Canvas):
             self.create_oval(*box, outline=theme.BORDER_STRONG, width=18)
         else:
             start = 90.0
-            for _label, value, color in parts:
-                if value <= 0:
-                    continue
-                extent = -360.0 * value / total
+            shown = [(v, c) for _l, v, c in parts if v > 0]
+            extents = [360.0 * v / total for v, _c in shown]
+            if len(shown) > 1:
+                extents = [max(2.0, e) for e in extents]
+                big = extents.index(max(extents))
+                extents[big] -= sum(extents) - 360.0
+            for (value, color), extent in zip(shown, extents):
+                extent = -extent
                 if abs(extent) >= 359.99:
                     self.create_oval(*box, outline=color, width=18)
                 else:
