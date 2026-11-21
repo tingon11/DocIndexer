@@ -31,6 +31,29 @@ DocIndexer prowadzi indeks tekstu dokumentów znajdujących się w wybranych prz
 
 ## 2. Pierwsze uruchomienie: kreator konfiguracji
 
+### Język i warunki korzystania
+
+Przy pierwszym uruchomieniu DocIndexer pyta o język, a potem pokazuje warunki korzystania w tym języku.
+
+![Wybór języka](18-welcome-language.png)
+
+| # | Element | Do czego służy |
+|:--:|---|---|
+| **①** | **Język** | Kliknięcie wybiera język programu i podręcznika. |
+
+![Warunki korzystania](19-terms.png)
+
+| # | Element | Do czego służy |
+|:--:|---|---|
+| **①** | **Treść warunków** | Trzeba go przewinąć do końca. |
+| **②** | **Uwaga** | Zmienia kolor na zielony, gdy przeczytasz całość. |
+| **③** | **Odrzucam** | Zamyka program. |
+| **④** | **Akceptuję** | Uaktywnia się na końcu tekstu i przechodzi do konfiguracji. |
+
+Przycisk **Akceptuję** uaktywnia się dopiero po przewinięciu tekstu do końca; **Odrzucam** (lub zamknięcie okna) zamyka program. Odpowiedź jest zapamiętywana: warunki są pokazywane ponownie tylko wtedy, gdy się zmienią. W każdej chwili można je przeczytać ponownie przyciskiem **Warunki korzystania** obok **📖 Podręcznik**.
+
+### Kreator konfiguracji
+
 Przy pierwszym uruchomieniu DocIndexer pyta, gdzie ma szukać.
 
 ![Kreator konfiguracji](01-setup.png)
@@ -63,7 +86,7 @@ U góry znajduje się nagłówek, zawsze widoczny:
 - menu **Język**, które od razu zmienia język całego programu;
 - przyciski minimalizacji, maksymalizacji i zamykania. **Zamknięcie okna nie zatrzymuje DocIndexer**: okno zostaje ukryte, a praca trwa dalej (zob. [rozdział 14](#14-ikona-obok-zegara-i-uruchamianie-z-systemem-windows)).
 
-Poniżej znajdują się karty **Monitor**, **Wyszukiwanie**, **Ważne**, **Dokumenty**, **Duplikaty** i **Ustawienia**. Na prawo od kart przycisk **📖 Podręcznik** otwiera ten podręcznik w języku programu.
+Poniżej znajdują się karty **Monitor**, **Wyszukiwanie**, **Ważne**, **Dokumenty**, **Duplikaty** i **Ustawienia**. Na prawo od kart przycisk **📖 Podręcznik** otwiera ten podręcznik w języku programu. Obok przycisk **Warunki korzystania** ponownie pokazuje warunki zaakceptowane przy pierwszym uruchomieniu.
 
 ![Podręcznik](17-manual.png)
 
@@ -85,13 +108,14 @@ Monitor pokazuje postęp indeksowania.
 |:--:|---|---|
 | **①** | **Karty** | Strony programu. |
 | **②** | **📖 Podręcznik** | Otwiera ten podręcznik w języku programu. |
-| **③** | **Korektor** | Porusza się, gdy DocIndexer pracuje. |
-| **④** | **Język** | Zmienia język interfejsu. |
-| **⑤** | **Postęp** | Jaka część plików została już przeanalizowana. |
-| **⑥** | **Wstrzymaj** | Wstrzymuje i wznawia indeksowanie. |
-| **⑦** | **Sprawdź foldery teraz** | Od razu szuka nowych lub zmienionych plików. |
-| **⑧** | **Zasoby do indeksowania** | Ile CPU używać i limity temperatury (rozdział 5). |
-| **⑨** | **Dziennik** | Komunikaty o pracy, plik po pliku. |
+| **③** | **Warunki korzystania** | Ponownie pokazuje warunki zaakceptowane przy pierwszym uruchomieniu. |
+| **④** | **Korektor** | Porusza się, gdy DocIndexer pracuje. |
+| **⑤** | **Język** | Zmienia język interfejsu. |
+| **⑥** | **Postęp** | Jaka część plików została już przeanalizowana. |
+| **⑦** | **Wstrzymaj** | Wstrzymuje i wznawia indeksowanie. |
+| **⑧** | **Sprawdź foldery teraz** | Od razu szuka nowych lub zmienionych plików. |
+| **⑨** | **Zasoby do indeksowania** | Ile CPU używać i limity temperatury (rozdział 5). |
+| **⑩** | **Dziennik** | Komunikaty o pracy, plik po pliku. |
 
 - **Monitorowane foldery**: lista folderów pod tytułem.
 - **Wykres kołowy** i pola: **Pliki do analizy** (wszystkie znalezione pliki), **Zindeksowane**, **Do zrobienia**, **Pominięte** (bez czytelnego tekstu lub wykluczone) i **Błędy**.
@@ -175,6 +199,18 @@ Panel **Zasoby używane przez DocIndexer** pokazuje CPU i RAM używane przez pro
 
 **Podgląd** po prawej pokazuje rzeczywistą stronę dokumentu z obramowanymi trafieniami: strzałki zmieniają stronę, **−**, **Dopasuj** i **+** zmieniają powiększenie (podobnie kółko myszy), **◀ Trafienie** i **Trafienie ▶** przeskakują od jednego trafienia do następnego, **Otwórz oryginał** (lub dwukrotne kliknięcie wyniku) otwiera plik w jego programie. W przypadku dokumentów Office podgląd jest przygotowywany przez Office i może to potrwać kilka sekund.
 
+### Brak dokładnych wyników
+
+Jeśli wyszukiwanie nic nie znajdzie, DocIndexer sam próbuje ponownie, dopuszczając jeden błąd pisowni lub OCR na słowo. Wtedy nad wynikami pojawia się czerwone powiadomienie, które kilka razy miga: **Brak dokładnych wyników: pokazano wyniki z 1 błędem pisowni lub OCR**. Sprawdź wyniki: mogą zawierać słowa podobne do szukanego.
+
+![Brak dokładnych wyników](20-near-miss.png)
+
+| # | Element | Do czego służy |
+|:--:|---|---|
+| **①** | **Wyszukiwanie z błędem** | Tutaj brakuje jednej litery. |
+| **②** | **Czerwone powiadomienie** | Miga: brak dokładnych wyników, pokazano te z 1 błędem. |
+| **③** | **Wyniki** | Dokumenty z poprawnym słowem. |
+
 ## 7. Edytor wyrażeń regularnych
 
 Wyrażenie regularne (regex) wyszukuje *wzorzec* zamiast słowa: na przykład dowolną datę, dowolny adres internetowy lub dowolny kod o określonym formacie.
@@ -227,7 +263,7 @@ W podglądzie, pod nazwą pliku, każdy dokument może mieć **kolor ważności*
 | **③** | **Lista** | Pokolorowane dokumenty, od najważniejszych, z notatką. |
 | **④** | **Ważność** | Pięć kolorów i notatka; **Zapisz notatkę** ją zapisuje. |
 | **⑤** | **Pokaż i analizuj ponownie** | Otwiera folder pliku lub ponownie dodaje go do kolejki. |
-| **⑥** | **Eksport** | Zapisuje listę jako CSV, Excel lub HTML. |
+| **⑥** | **Eksportuj** | Zapisuje listę jako CSV, Excel lub HTML. |
 
 Karta **Ważne** zawiera tylko pokolorowane dokumenty, najważniejsze na górze, z notatką. Na każdej liście kolor jest widoczny jako kropki na początku wiersza, a sam wiersz jest lekko zabarwiony. W Wyszukiwaniu opcja **Tylko ważne dokumenty** ogranicza wyszukiwanie do tych plików.
 
@@ -243,7 +279,7 @@ Karta **Dokumenty** zawiera wszystkie zindeksowane pliki.
 | **②** | **Stan** | Wszystkie, zindeksowane, w kolejce, pominięte lub z błędami. |
 | **③** | **Lista** | Wszystkie znalezione pliki, z folderem, typem i stanem. |
 | **④** | **Analizuj ponownie** | Ponownie dodaje zaznaczony plik do kolejki. |
-| **⑤** | **Eksport** | Zapisuje listę jako CSV, Excel lub HTML. |
+| **⑤** | **Eksportuj** | Zapisuje listę jako CSV, Excel lub HTML. |
 | **⑥** | **Podgląd** | Zaznaczony dokument, z ważnością i notatką. |
 
 - **Szukaj w nazwie**: filtruje listę w trakcie pisania.
@@ -332,13 +368,14 @@ Zmiany obowiązują dopiero po naciśnięciu **Zapisz**. **Odrzuć zmiany** przy
 | # | Element | Do czego służy |
 |:--:|---|---|
 | **①** | **Uruchamiaj z systemem Windows** | Działa od razu, bez naciskania Zapisz. |
-| **②** | **Skrót klawiszowy** | Klawisze szybkiego wyszukiwania (puste = wyłączone). |
-| **③** | **Praca w tle** | CPU przy komputerze w użyciu i bezczynnym, czas oczekiwania, zajęte programy. |
-| **④** | **Pomijaj pliki większe niż (MB)** | Powyżej tego limitu pliki trafiają do **Dużych plików**. |
-| **⑤** | **Rozmiar interfejsu (%) — niezależny od powiększenia Windows** | Powiększa lub zmniejsza całe okno. |
-| **⑥** | **Testuj OCR** | Sprawdza odczyt skanów. |
+| **②** | **Dodaj do DocIndexer** | Pozycja menu prawego przycisku folderów w Eksploratorze; działa od razu. |
+| **③** | **Skrót klawiszowy** | Klawisze szybkiego wyszukiwania (puste = wyłączone). |
+| **④** | **Praca w tle** | CPU przy komputerze w użyciu i bezczynnym, czas oczekiwania, zajęte programy. |
+| **⑤** | **Pomijaj pliki większe niż (MB)** | Powyżej tego limitu pliki trafiają do **Dużych plików**. |
+| **⑥** | **Rozmiar interfejsu (%) — niezależny od powiększenia Windows** | Powiększa lub zmniejsza całe okno. |
 
 - **Uruchamianie**: uruchamianie z systemem Windows (działa od razu).
+- **Dodaj do DocIndexer**: dodaje pozycję do menu prawego przycisku folderów w Eksploratorze plików; działa od razu, bez Zapisz (zob. rozdział 14).
 - **Szybkie wyszukiwanie**: skrót klawiszowy, na przykład `ctrl+alt+d`, `ctrl+shift+f` lub `win+alt+d`; puste = wyłączone. Jeśli skrót jest już używany przez inny program, pojawia się ostrzeżenie.
 - **Praca w tle**: maksymalne CPU, gdy używasz komputera i gdy jest bezczynny, po ilu minutach komputer uznaje się za bezczynny, powyżej jakiego obciążenia przez inne programy DocIndexer czeka, wątki OCR, jak często (w godzinach) ponownie sprawdzać wszystkie foldery, maksymalny rozmiar pliku (większe pliki trafiają do **Dużych plików**), rozmiar interfejsu (w %, niezależny od powiększenia Windows; obowiązuje od następnego uruchomienia). Pierwsze wartości zmieniają się też za pomocą suwaka w Monitorze.
 - **Moduły dodatkowe**: metadane za pomocą ExifTool, tekst plików w archiwach (7-Zip), bazy danych SQLite, dBASE/FoxPro i Access. Każdy moduł przechowuje swoje dane osobno; w Wyszukiwaniu wybierasz, w których szukać.
@@ -378,6 +415,10 @@ Po zamknięciu okna DocIndexer nadal pracuje i pozostaje jako ikona obok zegara.
 - **Zakończ**, które naprawdę zamyka program.
 
 Jeśli uruchomisz DocIndexer po raz drugi, nowa kopia się nie uruchomi: zostanie pokazane okno już działającej. Uruchamianie z systemem Windows dotyczy tylko Twojego użytkownika i nie wymaga uprawnień administratora.
+
+### Dodawanie folderu prawym przyciskiem myszy
+
+Gdy opcja **Dodaj do DocIndexer** jest włączona (Ustawienia › Konfiguracja › Uruchamianie), kliknięcie prawym przyciskiem folderu w Eksploratorze plików pokazuje **Dodaj do DocIndexer**: folder trafia do monitorowanych folderów, a indeksowanie zaczyna się od razu, nawet jeśli DocIndexer był już otwarty. W Windows 11 pozycja znajduje się w „Pokaż więcej opcji” (lub Shift+F10). Jeśli folder jest już monitorowany albo leży w monitorowanym folderze, DocIndexer o tym informuje i niczego nie zmienia; jeśli zawiera foldery już monitorowane, zajmuje ich miejsce. Uprawnienia administratora nie są potrzebne.
 
 ## 15. Typowe problemy
 

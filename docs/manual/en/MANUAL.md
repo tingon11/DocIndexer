@@ -31,6 +31,29 @@ DocIndexer keeps an index of the text of the documents in the folders you choose
 
 ## 2. First start: setup wizard
 
+### Language and terms of use
+
+The very first time it opens, DocIndexer asks for the language and then shows the terms of use in that language.
+
+![Choosing the language](18-welcome-language.png)
+
+| # | Element | What it does |
+|:--:|---|---|
+| **①** | **Language** | A click picks the language of the program and the manual. |
+
+![Terms of use](19-terms.png)
+
+| # | Element | What it does |
+|:--:|---|---|
+| **①** | **Terms text** | Must be scrolled to the end. |
+| **②** | **Note** | Turns green when you have read everything. |
+| **③** | **I decline** | Closes the program. |
+| **④** | **I accept** | Becomes active at the end of the text and continues to the setup. |
+
+**I accept** becomes active only after you have scrolled the text to the end; **I decline** (or closing the window) closes the program. The answer is remembered: the terms are asked again only if they change. You can read them again at any time with the **Terms of use** button next to **📖 Manual**.
+
+### Guided setup
+
 The first time it opens, DocIndexer asks where it should look.
 
 ![Setup wizard](01-setup.png)
@@ -63,7 +86,7 @@ At the top is the header, always visible:
 - the **Language** menu, which changes the language of the whole program at once;
 - the minimise, maximise and close buttons. **Closing the window does not stop DocIndexer**: it hides it and the work continues (see [chapter 14](#14-icon-next-to-the-clock-and-starting-with-windows)).
 
-Below are the tabs **Monitor**, **Search**, **Important**, **Documents**, **Duplicates** and **Settings**. To the right of the tabs, **📖 Manual** opens this manual in the program's language.
+Below are the tabs **Monitor**, **Search**, **Important**, **Documents**, **Duplicates** and **Settings**. To the right of the tabs, **📖 Manual** opens this manual in the program's language. Next to it, **Terms of use** shows again the terms of use accepted at first start.
 
 ![The manual](17-manual.png)
 
@@ -85,13 +108,14 @@ The Monitor shows how far indexing has got.
 |:--:|---|---|
 | **①** | **Tabs** | The pages of the program. |
 | **②** | **📖 Manual** | Opens this manual in the program's language. |
-| **③** | **Equalizer** | Moves while DocIndexer is working. |
-| **④** | **Language** | Changes the interface language. |
-| **⑤** | **Progress** | How much of the files is already analysed. |
-| **⑥** | **Pause** | Pauses and resumes indexing. |
-| **⑦** | **Check folders now** | Looks for new or changed files right away. |
-| **⑧** | **Resources for indexing** | How much CPU to use and temperature limits (chapter 5). |
-| **⑨** | **Log** | The work messages, file by file. |
+| **③** | **Terms of use** | Shows again the terms of use accepted at first start. |
+| **④** | **Equalizer** | Moves while DocIndexer is working. |
+| **⑤** | **Language** | Changes the interface language. |
+| **⑥** | **Progress** | How much of the files is already analysed. |
+| **⑦** | **Pause** | Pauses and resumes indexing. |
+| **⑧** | **Check folders now** | Looks for new or changed files right away. |
+| **⑨** | **Resources for indexing** | How much CPU to use and temperature limits (chapter 5). |
+| **⑩** | **Log** | The work messages, file by file. |
 
 - **Monitored folders**: the list of folders under the title.
 - **Pie chart** and boxes: **Files to analyse** (all files found), **Indexed**, **To do**, **Skipped** (no readable text, or excluded) and **Errors**.
@@ -174,6 +198,18 @@ The **Resources used by DocIndexer** panel shows the CPU and RAM used by the pro
 **The results.** Above the table there is a button for each file type found (.pdf, .docx...) with the number of results: a click hides or shows that type, **All** and **None** change them all. The columns are importance, name, folder, page, relevance, creation date and an excerpt with the coloured words; clicking a header sorts the column. Below the table is the extracted text of the page found, with the words highlighted.
 
 **The preview** on the right shows the real page of the document with the matches framed: the arrows change page, **−**, **Fit** and **+** change the zoom (the mouse wheel too), **◀ Match** and **Match ▶** jump from one hit to the next, **Open original** (or a double click on the result) opens the file with its program. For Office documents the preview is prepared with Office and may take a few seconds.
+
+### No exact results
+
+If a search finds nothing, DocIndexer tries again by itself, allowing one typing or OCR error per word. In that case a red notice appears above the results and blinks a few times: **No exact results: showing those with 1 typing or OCR error**. Check the results: they may contain words similar to the one you searched for.
+
+![No exact results](20-near-miss.png)
+
+| # | Element | What it does |
+|:--:|---|---|
+| **①** | **Search with a typo** | One letter is missing here. |
+| **②** | **Red notice** | Blinks: no exact results, those with 1 error are shown. |
+| **③** | **Results** | The documents with the correct word. |
 
 ## 7. Regular expression editor
 
@@ -332,13 +368,14 @@ Changes apply only after **Save**. **Discard changes** goes back to the saved se
 | # | Element | What it does |
 |:--:|---|---|
 | **①** | **Start with Windows** | Applies immediately, without pressing Save. |
-| **②** | **Keyboard shortcut** | The quick search keys (empty = off). |
-| **③** | **Background work** | CPU with the PC in use and idle, waiting time, busy programs. |
-| **④** | **Skip files larger than (MB)** | Above this limit files go to **Large files**. |
-| **⑤** | **Interface size (%) — does not follow Windows zoom** | Enlarges or shrinks the whole window. |
-| **⑥** | **Test OCR** | Tests the reading of scans. |
+| **②** | **Add to DocIndexer** | Right-click item for folders in File Explorer; applies immediately. |
+| **③** | **Keyboard shortcut** | The quick search keys (empty = off). |
+| **④** | **Background work** | CPU with the PC in use and idle, waiting time, busy programs. |
+| **⑤** | **Skip files larger than (MB)** | Above this limit files go to **Large files**. |
+| **⑥** | **Interface size (%) — does not follow Windows zoom** | Enlarges or shrinks the whole window. |
 
 - **Startup**: start with Windows (applies immediately).
+- **Add to DocIndexer**: adds the item to the right-click menu of folders in File Explorer; applies immediately, without Save (see chapter 14).
 - **Quick search**: the keyboard shortcut, for example `ctrl+alt+d`, `ctrl+shift+f` or `win+alt+d`; empty = off. If the shortcut is already used by another program, a warning appears.
 - **Background work**: maximum CPU while you use the PC and when it is idle, after how many minutes the PC counts as idle, above which load of other programs DocIndexer waits, OCR threads, how often (hours) to recheck all folders, maximum file size (larger files go to **Large files**), interface size (in %, independent of the Windows zoom; applies from the next start). The first values also change with the Monitor slider.
 - **Add-on modules**: metadata with ExifTool, text of files inside archives (7-Zip), SQLite, dBASE/FoxPro and Access databases. Each module keeps its data separately; in Search you choose which to search.
@@ -378,6 +415,10 @@ When the window is closed DocIndexer keeps working and stays as an icon next to 
 - **Exit**, which really closes the program.
 
 If you start DocIndexer a second time no new copy starts: the window of the one already running is shown. Starting with Windows applies only to your user and needs no administrator rights.
+
+### Adding a folder with the right mouse button
+
+With the **Add to DocIndexer** option on (Settings › Configuration › Startup), right-clicking a folder in File Explorer shows **Add to DocIndexer**: the folder joins the monitored folders and indexing starts at once, even if DocIndexer was already open. On Windows 11 the item is under "Show more options" (or Shift+F10). If the folder is already monitored, or lies inside a monitored folder, DocIndexer says so and changes nothing; if it contains folders that are already monitored, it takes their place. No administrator rights are needed.
 
 ## 15. Common problems
 

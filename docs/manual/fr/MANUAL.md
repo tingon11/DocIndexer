@@ -31,6 +31,29 @@ DocIndexer tient un index du texte des documents qui se trouvent dans les dossie
 
 ## 2. Premier démarrage : configuration guidée
 
+### Langue et conditions d'utilisation
+
+À la toute première ouverture, DocIndexer demande la langue puis affiche les conditions d'utilisation dans cette langue.
+
+![Choix de la langue](18-welcome-language.png)
+
+| # | Élément | Rôle |
+|:--:|---|---|
+| **①** | **Langue** | Un clic choisit la langue du programme et du manuel. |
+
+![Conditions d'utilisation](19-terms.png)
+
+| # | Élément | Rôle |
+|:--:|---|---|
+| **①** | **Texte des conditions** | À faire défiler jusqu'au bout. |
+| **②** | **Note** | Devient verte quand tout est lu. |
+| **③** | **Je refuse** | Ferme le programme. |
+| **④** | **J'accepte** | S'active en fin de texte et passe à la configuration. |
+
+**J'accepte** ne s'active qu'après avoir fait défiler le texte jusqu'au bout ; **Je refuse** (ou la fermeture de la fenêtre) ferme le programme. La réponse est mémorisée : les conditions ne sont redemandées que si elles changent. Vous pouvez les relire à tout moment avec le bouton **Conditions d'utilisation** à côté de **📖 Manuel**.
+
+### Configuration guidée
+
 À la première ouverture, DocIndexer demande où il doit chercher.
 
 ![Configuration guidée](01-setup.png)
@@ -63,7 +86,7 @@ En haut se trouve l'en-tête, toujours visible :
 - le menu **Langue**, qui change immédiatement la langue de tout le programme ;
 - les boutons réduire, agrandir et fermer. **Fermer la fenêtre n'arrête pas DocIndexer** : elle est masquée et le travail continue (voir le [chapitre 14](#14-icône-près-de-lhorloge-et-démarrage-avec-windows)).
 
-En dessous se trouvent les onglets **Moniteur**, **Recherche**, **Importants**, **Documents**, **Doublons** et **Paramètres**. À droite des onglets, **📖 Manuel** ouvre ce manuel dans la langue du programme.
+En dessous se trouvent les onglets **Moniteur**, **Recherche**, **Importants**, **Documents**, **Doublons** et **Paramètres**. À droite des onglets, **📖 Manuel** ouvre ce manuel dans la langue du programme. À côté, **Conditions d'utilisation** réaffiche les conditions acceptées au premier démarrage.
 
 ![Le manuel](17-manual.png)
 
@@ -85,13 +108,14 @@ Le Moniteur montre où en est l'indexation.
 |:--:|---|---|
 | **①** | **Onglets** | Les pages du programme. |
 | **②** | **📖 Manuel** | Ouvre ce manuel dans la langue du programme. |
-| **③** | **Égaliseur** | Bouge quand DocIndexer travaille. |
-| **④** | **Langue** | Change la langue de l'interface. |
-| **⑤** | **Progression** | Part des fichiers déjà analysés. |
-| **⑥** | **Mettre en pause** | Met en pause et reprend l'indexation. |
-| **⑦** | **Vérifier les dossiers maintenant** | Cherche tout de suite les fichiers nouveaux ou modifiés. |
-| **⑧** | **Ressources pour l'indexation** | CPU à utiliser et seuils de température (chapitre 5). |
-| **⑨** | **Journal** | Les messages du travail, fichier par fichier. |
+| **③** | **Conditions d'utilisation** | Réaffiche les conditions acceptées au premier démarrage. |
+| **④** | **Égaliseur** | Bouge quand DocIndexer travaille. |
+| **⑤** | **Langue** | Change la langue de l'interface. |
+| **⑥** | **Progression** | Part des fichiers déjà analysés. |
+| **⑦** | **Mettre en pause** | Met en pause et reprend l'indexation. |
+| **⑧** | **Vérifier les dossiers maintenant** | Cherche tout de suite les fichiers nouveaux ou modifiés. |
+| **⑨** | **Ressources pour l'indexation** | CPU à utiliser et seuils de température (chapitre 5). |
+| **⑩** | **Journal** | Les messages du travail, fichier par fichier. |
 
 - **Dossiers surveillés** : la liste sous le titre.
 - **Graphique circulaire** et cases : **Fichiers à analyser** (tous les fichiers trouvés), **Indexés**, **À faire**, **Ignorés** (sans texte lisible ou exclus) et **Erreurs**.
@@ -174,6 +198,18 @@ Le cadre **Ressources utilisées par DocIndexer** montre le CPU et la RAM utilis
 **Les résultats.** Au-dessus du tableau, il y a un bouton pour chaque type de fichier trouvé (.pdf, .docx...) avec le nombre de résultats : un clic masque ou affiche ce type, **Toutes** et **Aucune** les changent tous. Les colonnes sont l'importance, le nom, le dossier, la page, la pertinence, la date de création et un extrait avec les mots colorés ; un clic sur l'en-tête trie la colonne. Sous le tableau se trouve le texte extrait de la page trouvée, avec les mots surlignés.
 
 **L'aperçu** à droite montre la vraie page du document avec les occurrences encadrées : les flèches changent de page, **−**, **Ajuster** et **+** changent le zoom (la molette aussi), **◀ Occurrence** et **Occurrence ▶** passent d'un résultat à l'autre, **Ouvrir l'original** (ou un double clic sur le résultat) ouvre le fichier avec son programme. Pour les documents Office, l'aperçu est préparé avec Office et peut demander quelques secondes.
+
+### Aucun résultat exact
+
+Si une recherche ne trouve rien, DocIndexer réessaie seul en tolérant une faute de frappe ou d'OCR par mot. Un avis rouge apparaît alors au-dessus des résultats et clignote quelques fois : **Aucun résultat exact : résultats avec 1 faute de frappe ou d'OCR**. Vérifiez les résultats : ils peuvent contenir des mots proches de celui cherché.
+
+![Aucun résultat exact](20-near-miss.png)
+
+| # | Élément | Rôle |
+|:--:|---|---|
+| **①** | **Recherche avec une faute** | Ici il manque une lettre. |
+| **②** | **Avis rouge** | Clignote : aucun résultat exact, ceux avec 1 faute sont affichés. |
+| **③** | **Résultats** | Les documents avec le bon mot. |
 
 ## 7. Éditeur d'expressions régulières
 
@@ -332,13 +368,14 @@ Les modifications ne s'appliquent qu'après **Enregistrer**. **Annuler les modif
 | # | Élément | Rôle |
 |:--:|---|---|
 | **①** | **Démarrer avec Windows** | S'applique tout de suite, sans Enregistrer. |
-| **②** | **Raccourci clavier** | Les touches de la recherche rapide (vide = désactivée). |
-| **③** | **Travail en arrière-plan** | CPU avec le PC utilisé et inactif, attente, programmes occupés. |
-| **④** | **Ignorer les fichiers de plus de (Mo)** | Au-delà de cette limite les fichiers vont dans **Gros fichiers**. |
-| **⑤** | **Taille de l'interface (%) — ne suit pas le zoom de Windows** | Agrandit ou réduit toute la fenêtre. |
-| **⑥** | **Tester l'OCR** | Teste la lecture des numérisations. |
+| **②** | **Ajouter à DocIndexer** | Élément du clic droit des dossiers dans l'Explorateur ; s'applique tout de suite. |
+| **③** | **Raccourci clavier** | Les touches de la recherche rapide (vide = désactivée). |
+| **④** | **Travail en arrière-plan** | CPU avec le PC utilisé et inactif, attente, programmes occupés. |
+| **⑤** | **Ignorer les fichiers de plus de (Mo)** | Au-delà de cette limite les fichiers vont dans **Gros fichiers**. |
+| **⑥** | **Taille de l'interface (%) — ne suit pas le zoom de Windows** | Agrandit ou réduit toute la fenêtre. |
 
 - **Démarrage** : démarrage avec Windows (s'applique immédiatement).
+- **Ajouter à DocIndexer** : ajoute l'élément au menu du clic droit des dossiers dans l'Explorateur de fichiers ; s'applique tout de suite, sans Enregistrer (voir le chapitre 14).
 - **Recherche rapide** : le raccourci clavier, par exemple `ctrl+alt+d`, `ctrl+shift+f` ou `win+alt+d` ; vide = désactivée. Si le raccourci est déjà utilisé par un autre programme, un avertissement s'affiche.
 - **Travail en arrière-plan** : CPU maximal pendant que vous utilisez le PC et quand il est inactif, après combien de minutes le PC est considéré comme inactif, au-delà de quelle charge des autres programmes DocIndexer attend, threads OCR, toutes les combien d'heures revérifier tous les dossiers, taille maximale des fichiers (au-delà ils vont dans **Gros fichiers**), taille de l'interface (en %, indépendante du zoom de Windows ; s'applique au prochain démarrage). Les premières valeurs changent aussi avec le curseur du Moniteur.
 - **Modules complémentaires** : métadonnées avec ExifTool, texte des fichiers dans les archives (7-Zip), bases de données SQLite, dBASE/FoxPro et Access. Chaque module garde ses données à part ; dans Recherche, vous choisissez où chercher.
@@ -378,6 +415,10 @@ Quand la fenêtre est fermée, DocIndexer continue à travailler et reste sous f
 - **Quitter**, qui ferme vraiment le programme.
 
 Si vous lancez DocIndexer une deuxième fois, aucune nouvelle copie ne démarre : la fenêtre de celui qui tourne déjà s'affiche. Le démarrage avec Windows ne concerne que votre utilisateur et ne demande pas de droits d'administrateur.
+
+### Ajouter un dossier avec le clic droit
+
+Avec l'option **Ajouter à DocIndexer** activée (Paramètres › Configuration › Démarrage), un clic droit sur un dossier dans l'Explorateur de fichiers affiche **Ajouter à DocIndexer** : le dossier rejoint les dossiers surveillés et l'indexation démarre aussitôt, même si DocIndexer était déjà ouvert. Sous Windows 11, l'élément se trouve dans « Afficher d'autres options » (ou Maj+F10). Si le dossier est déjà surveillé, ou se trouve dans un dossier surveillé, DocIndexer le signale et ne change rien ; s'il contient des dossiers déjà surveillés, il prend leur place. Aucun droit d'administrateur n'est nécessaire.
 
 ## 15. Problèmes fréquents
 

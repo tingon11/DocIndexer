@@ -31,6 +31,29 @@ DocIndexer tiene un indice del testo dei documenti che si trovano nelle cartelle
 
 ## 2. Primo avvio: configurazione guidata
 
+### Lingua e termini d'uso
+
+Alla primissima apertura DocIndexer chiede la lingua e poi mostra i termini d'uso in quella lingua.
+
+![Scelta della lingua](18-welcome-language.png)
+
+| # | Elemento | A cosa serve |
+|:--:|---|---|
+| **①** | **Lingua** | Un clic sceglie la lingua del programma e del manuale. |
+
+![Termini d'uso](19-terms.png)
+
+| # | Elemento | A cosa serve |
+|:--:|---|---|
+| **①** | **Testo dei termini** | Va fatto scorrere fino in fondo. |
+| **②** | **Nota** | Diventa verde quando hai letto tutto. |
+| **③** | **Rifiuto** | Chiude il programma. |
+| **④** | **Accetto** | Si attiva in fondo al testo e prosegue con la configurazione. |
+
+**Accetto** si attiva solo dopo aver fatto scorrere il testo fino in fondo; **Rifiuto** (o la chiusura della finestra) chiude il programma. La risposta viene ricordata: i termini vengono chiesti di nuovo solo se cambiano. Si possono rileggere quando vuoi con il pulsante **Termini d'uso** accanto a **📖 Manuale**.
+
+### Configurazione guidata
+
 Alla prima apertura DocIndexer chiede dove deve cercare.
 
 ![Configurazione guidata](01-setup.png)
@@ -63,7 +86,7 @@ In alto c'è l'intestazione, sempre visibile:
 - il menu **Lingua**, che cambia subito la lingua di tutto il programma;
 - i pulsanti riduci, ingrandisci e chiudi. **Chiudere la finestra non ferma DocIndexer**: la nasconde e il lavoro continua (vedi [capitolo 14](#14-icona-vicino-allorologio-e-avvio-con-windows)).
 
-Sotto ci sono le schede **Monitor**, **Ricerca**, **Importanti**, **Documenti**, **Duplicati** e **Impostazioni**. A destra delle schede, **📖 Manuale** apre questo manuale nella lingua del programma.
+Sotto ci sono le schede **Monitor**, **Ricerca**, **Importanti**, **Documenti**, **Duplicati** e **Impostazioni**. A destra delle schede, **📖 Manuale** apre questo manuale nella lingua del programma. Accanto, **Termini d'uso** mostra di nuovo i termini d'uso accettati alla prima apertura.
 
 ![Il manuale](17-manual.png)
 
@@ -85,13 +108,14 @@ Il Monitor mostra a che punto è l'indicizzazione.
 |:--:|---|---|
 | **①** | **Schede** | Le pagine del programma. |
 | **②** | **📖 Manuale** | Apre questo manuale nella lingua del programma. |
-| **③** | **Equalizzatore** | Si muove quando DocIndexer sta lavorando. |
-| **④** | **Lingua** | Cambia la lingua dell'interfaccia. |
-| **⑤** | **Avanzamento** | Quanta parte dei file è già analizzata. |
-| **⑥** | **Metti in pausa** | Ferma e riprende l'indicizzazione. |
-| **⑦** | **Controlla subito le cartelle** | Cerca subito file nuovi o cambiati. |
-| **⑧** | **Risorse per l'indicizzazione** | Quanta CPU usare e soglie di temperatura (capitolo 5). |
-| **⑨** | **Registro** | I messaggi del lavoro, file per file. |
+| **③** | **Termini d'uso** | Rilegge i termini d'uso accettati alla prima apertura. |
+| **④** | **Equalizzatore** | Si muove quando DocIndexer sta lavorando. |
+| **⑤** | **Lingua** | Cambia la lingua dell'interfaccia. |
+| **⑥** | **Avanzamento** | Quanta parte dei file è già analizzata. |
+| **⑦** | **Metti in pausa** | Ferma e riprende l'indicizzazione. |
+| **⑧** | **Controlla subito le cartelle** | Cerca subito file nuovi o cambiati. |
+| **⑨** | **Risorse per l'indicizzazione** | Quanta CPU usare e soglie di temperatura (capitolo 5). |
+| **⑩** | **Registro** | I messaggi del lavoro, file per file. |
 
 - **Cartelle monitorate**: l'elenco delle cartelle sotto il titolo.
 - **Grafico a torta** e riquadri: **File da analizzare** (tutti i file trovati), **Indicizzati**, **Da fare**, **Saltati** (senza testo leggibile o esclusi) ed **Errori**.
@@ -174,6 +198,18 @@ Il riquadro **Risorse usate da DocIndexer** mostra CPU e RAM usate dal programma
 **I risultati.** Sopra la tabella c'è un pulsante per ogni tipo di file trovato (.pdf, .docx...) con il numero di risultati: un clic nasconde o mostra quel tipo, **Tutte** e **Nessuna** li cambiano tutti. Le colonne sono importanza, nome, cartella, pagina, rilevanza, data di creazione ed estratto con le parole colorate; un clic sull'intestazione ordina la colonna. Sotto la tabella c'è il testo estratto della pagina trovata, con le parole evidenziate.
 
 **L'anteprima** a destra mostra la pagina vera del documento con le occorrenze riquadrate: le frecce cambiano pagina, **−**, **Adatta** e **+** cambiano lo zoom (anche con la rotellina), **◀ Occorrenza** e **Occorrenza ▶** saltano da un risultato all'altro, **Apri originale** (o doppio clic sul risultato) apre il file con il suo programma. Per i documenti Office l'anteprima viene preparata con Office e può richiedere qualche secondo.
+
+### Nessun risultato esatto
+
+Se una ricerca non trova nulla, DocIndexer riprova da solo tollerando un errore di battitura o di OCR per parola. In quel caso sopra i risultati compare un avviso rosso che lampeggia qualche volta: **Nessun risultato esatto: mostrati quelli con 1 errore di battitura o di OCR**. Controlla i risultati: possono contenere parole simili a quella cercata.
+
+![Nessun risultato esatto](20-near-miss.png)
+
+| # | Elemento | A cosa serve |
+|:--:|---|---|
+| **①** | **Ricerca con un errore** | Qui manca una lettera. |
+| **②** | **Avviso rosso** | Lampeggia: nessun risultato esatto, mostrati quelli con 1 errore. |
+| **③** | **Risultati** | I documenti con la parola giusta. |
 
 ## 7. Editor delle espressioni regolari
 
@@ -332,13 +368,14 @@ Le modifiche valgono solo dopo **Salva**. **Annulla modifiche** torna alle impos
 | # | Elemento | A cosa serve |
 |:--:|---|---|
 | **①** | **Avvia con Windows** | Vale subito, senza premere Salva. |
-| **②** | **Scorciatoia da tastiera** | I tasti della ricerca rapida (vuoto = disattivata). |
-| **③** | **Lavoro in background** | CPU con il PC in uso e inattivo, attesa, programmi impegnati. |
-| **④** | **Salta i file più grandi di (MB)** | Oltre questo limite i file vanno in **File grandi**. |
-| **⑤** | **Dimensione interfaccia (%) — non segue lo zoom di Windows** | Ingrandisce o rimpicciolisce tutta la finestra. |
-| **⑥** | **Verifica OCR** | Prova la lettura delle scansioni. |
+| **②** | **Aggiungi a DocIndexer** | Voce del tasto destro delle cartelle in Esplora file; vale subito. |
+| **③** | **Scorciatoia da tastiera** | I tasti della ricerca rapida (vuoto = disattivata). |
+| **④** | **Lavoro in background** | CPU con il PC in uso e inattivo, attesa, programmi impegnati. |
+| **⑤** | **Salta i file più grandi di (MB)** | Oltre questo limite i file vanno in **File grandi**. |
+| **⑥** | **Dimensione interfaccia (%) — non segue lo zoom di Windows** | Ingrandisce o rimpicciolisce tutta la finestra. |
 
 - **Avvio**: avvio con Windows (vale subito).
+- **Aggiungi a DocIndexer**: aggiunge la voce al menu del tasto destro delle cartelle in Esplora file; vale subito, senza Salva (vedi il capitolo 14).
 - **Ricerca rapida**: la scorciatoia da tastiera, per esempio `ctrl+alt+d`, `ctrl+shift+f` o `win+alt+d`; vuota = disattivata. Se la scorciatoia è già usata da un altro programma compare un avviso.
 - **Lavoro in background**: CPU massima mentre usi il PC e con il PC inattivo, dopo quanti minuti il PC è considerato inattivo, oltre quale carico degli altri programmi DocIndexer aspetta, thread OCR, ogni quante ore ricontrollare tutte le cartelle, dimensione massima dei file (oltre va in **File grandi**), dimensione dell'interfaccia (in %, indipendente dallo zoom di Windows; vale dal prossimo avvio). I primi valori cambiano anche con lo slider del Monitor.
 - **Moduli aggiuntivi**: metadati con ExifTool, testo dei file dentro gli archivi (7-Zip), database SQLite, dBASE/FoxPro e Access. Ogni modulo salva i suoi dati a parte; in Ricerca scegli in quali cercare.
@@ -378,6 +415,10 @@ Quando la finestra è chiusa DocIndexer continua a lavorare e resta come icona v
 - **Esci**, che chiude davvero il programma.
 
 Se avvii DocIndexer una seconda volta non parte una nuova copia: si mostra la finestra di quello già attivo. L'avvio con Windows vale solo per il tuo utente e non richiede permessi di amministratore.
+
+### Aggiungere una cartella con il tasto destro
+
+Con l'opzione **Aggiungi a DocIndexer** attiva (Impostazioni › Configurazione › Avvio), in Esplora file il clic destro su una cartella mostra **Aggiungi a DocIndexer**: la cartella entra tra le cartelle monitorate e l'indicizzazione parte subito, anche se DocIndexer era già aperto. Su Windows 11 la voce è in «Mostra altre opzioni» (o Maiusc+F10). Se la cartella è già monitorata, o è dentro una cartella monitorata, DocIndexer lo dice e non cambia nulla; se contiene cartelle già monitorate, prende il loro posto. Non servono permessi di amministratore.
 
 ## 15. Problemi frequenti
 

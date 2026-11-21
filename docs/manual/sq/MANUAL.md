@@ -31,6 +31,29 @@ DocIndexer mban një indeks të tekstit të dokumenteve që ndodhen në dosjet q
 
 ## 2. Nisja e parë: konfigurimi i udhëhequr
 
+### Gjuha dhe kushtet e përdorimit
+
+Herën e parë që hapet, DocIndexer pyet për gjuhën dhe pastaj shfaq kushtet e përdorimit në atë gjuhë.
+
+![Zgjedhja e gjuhës](18-welcome-language.png)
+
+| # | Elementi | Çfarë bën |
+|:--:|---|---|
+| **①** | **Gjuha** | Një klik zgjedh gjuhën e programit dhe të manualit. |
+
+![Kushtet e përdorimit](19-terms.png)
+
+| # | Elementi | Çfarë bën |
+|:--:|---|---|
+| **①** | **Teksti i kushteve** | Duhet lëvizur deri në fund. |
+| **②** | **Shënim** | Bëhet e gjelbër kur ke lexuar gjithçka. |
+| **③** | **Refuzoj** | Mbyll programin. |
+| **④** | **Pranoj** | Aktivizohet në fund të tekstit dhe vazhdon me konfigurimin. |
+
+**Pranoj** aktivizohet vetëm pasi ta keni lëvizur tekstin deri në fund; **Refuzoj** (ose mbyllja e dritares) e mbyll programin. Përgjigjja ruhet: kushtet kërkohen sërish vetëm nëse ndryshojnë. Mund t'i rilexoni kur të doni me butonin **Kushtet e përdorimit** pranë **📖 Manuali**.
+
+### Konfigurimi i udhëhequr
+
 Herën e parë që hapet, DocIndexer pyet se ku duhet të kërkojë.
 
 ![Konfigurimi i udhëhequr](01-setup.png)
@@ -63,7 +86,7 @@ Lart ndodhet koka e dritares, gjithmonë e dukshme:
 - menuja **Gjuha**, që ndryshon menjëherë gjuhën e gjithë programit;
 - butonat minimizo, maksimizo dhe mbyll. **Mbyllja e dritares nuk e ndalon DocIndexer**: e fsheh dhe puna vazhdon (shih [kapitullin 14](#14-ikona-pranë-orës-dhe-nisja-me-windows)).
 
-Poshtë janë skedat **Monitorimi**, **Kërkimi**, **Të rëndësishme**, **Dokumentet**, **Dublikatat** dhe **Cilësimet**. Në të djathtë të skedave, **📖 Manuali** hap këtë manual në gjuhën e programit.
+Poshtë janë skedat **Monitorimi**, **Kërkimi**, **Të rëndësishme**, **Dokumentet**, **Dublikatat** dhe **Cilësimet**. Në të djathtë të skedave, **📖 Manuali** hap këtë manual në gjuhën e programit. Pranë tij, **Kushtet e përdorimit** shfaq sërish kushtet e pranuara në nisjen e parë.
 
 ![Manuali](17-manual.png)
 
@@ -85,13 +108,14 @@ Monitorimi tregon se ku ka arritur indeksimi.
 |:--:|---|---|
 | **①** | **Skedat** | Faqet e programit. |
 | **②** | **📖 Manuali** | Hap këtë manual në gjuhën e programit. |
-| **③** | **Ekualizuesi** | Lëviz kur DocIndexer po punon. |
-| **④** | **Gjuha** | Ndryshon gjuhën e ndërfaqes. |
-| **⑤** | **Përparimi** | Sa pjesë e skedarëve është analizuar tashmë. |
-| **⑥** | **Pauzë** | Ndalon dhe rinis indeksimin. |
-| **⑦** | **Kontrollo dosjet tani** | Kërkon menjëherë skedarë të rinj ose të ndryshuar. |
-| **⑧** | **Burimet për indeksimin** | Sa CPU të përdoret dhe pragjet e temperaturës (kapitulli 5). |
-| **⑨** | **Regjistri** | Mesazhet e punës, skedar pas skedari. |
+| **③** | **Kushtet e përdorimit** | Shfaq sërish kushtet e pranuara në nisjen e parë. |
+| **④** | **Ekualizuesi** | Lëviz kur DocIndexer po punon. |
+| **⑤** | **Gjuha** | Ndryshon gjuhën e ndërfaqes. |
+| **⑥** | **Përparimi** | Sa pjesë e skedarëve është analizuar tashmë. |
+| **⑦** | **Pauzë** | Ndalon dhe rinis indeksimin. |
+| **⑧** | **Kontrollo dosjet tani** | Kërkon menjëherë skedarë të rinj ose të ndryshuar. |
+| **⑨** | **Burimet për indeksimin** | Sa CPU të përdoret dhe pragjet e temperaturës (kapitulli 5). |
+| **⑩** | **Regjistri** | Mesazhet e punës, skedar pas skedari. |
 
 - **Dosjet e monitoruara**: lista nën titull.
 - **Grafiku rrethor** dhe kutitë: **Skedarë për analizë** (të gjithë skedarët e gjetur), **Të indeksuar**, **Për t'u bërë**, **Të anashkaluar** (pa tekst të lexueshëm ose të përjashtuar) dhe **Gabime**.
@@ -174,6 +198,18 @@ Kutia **Burimet e përdorura nga DocIndexer** tregon CPU-në dhe RAM-in që ka p
 **Rezultatet.** Mbi tabelë ka një buton për çdo lloj skedari të gjetur (.pdf, .docx...) me numrin e rezultateve: një klikim e fsheh ose e shfaq atë lloj, **Të gjitha** dhe **Asnjë** i ndryshojnë të gjitha. Kolonat janë rëndësia, emri, dosja, faqja, përshtatshmëria, data e krijimit dhe një fragment me fjalët e ngjyrosura; një klikim mbi kokën e kolonës e rendit. Nën tabelë është teksti i nxjerrë i faqes së gjetur, me fjalët e theksuara.
 
 **Paraparja** në të djathtë tregon faqen e vërtetë të dokumentit me përputhjet në kornizë: shigjetat ndryshojnë faqen, **−**, **Përshtat** dhe **+** ndryshojnë zmadhimin (edhe rrota e miut), **◀ Përputhje** dhe **Përputhje ▶** kalojnë nga një gjetje te tjetra, **Hap origjinalin** (ose një klikim i dyfishtë mbi rezultatin) e hap skedarin me programin e tij. Për dokumentet Office paraparja përgatitet me Office dhe mund të zgjasë disa sekonda.
+
+### Asnjë rezultat i saktë
+
+Nëse një kërkim nuk gjen asgjë, DocIndexer provon sërish vetë, duke lejuar një gabim shtypi ose OCR për fjalë. Atëherë mbi rezultatet shfaqet një njoftim i kuq që pulson disa herë: **Asnjë rezultat i saktë: shfaqen ata me 1 gabim shtypi ose OCR**. Kontrolloni rezultatet: mund të përmbajnë fjalë të ngjashme me atë që kërkuat.
+
+![Asnjë rezultat i saktë](20-near-miss.png)
+
+| # | Elementi | Çfarë bën |
+|:--:|---|---|
+| **①** | **Kërkim me një gabim** | Këtu mungon një shkronjë. |
+| **②** | **Njoftim i kuq** | Pulson: asnjë rezultat i saktë, shfaqen ata me 1 gabim. |
+| **③** | **Rezultatet** | Dokumentet me fjalën e saktë. |
 
 ## 7. Redaktori i shprehjeve të rregullta
 
@@ -332,13 +368,14 @@ Ndryshimet vlejnë vetëm pas **Ruaj**. **Anulo ndryshimet** kthehet te cilësim
 | # | Elementi | Çfarë bën |
 |:--:|---|---|
 | **①** | **Nis me Windows** | Vlen menjëherë, pa shtypur Ruaj. |
-| **②** | **Shkurtore e tastierës** | Tastet e kërkimit të shpejtë (bosh = çaktivizuar). |
-| **③** | **Puna në sfond** | CPU me kompjuterin në përdorim dhe joaktiv, pritja, programet e zëna. |
-| **④** | **Anashkalo skedarët më të mëdhenj se (MB)** | Mbi këtë kufi skedarët shkojnë te **Skedarë të mëdhenj**. |
-| **⑤** | **Madhësia e ndërfaqes (%) — nuk ndjek zmadhimin e Windows** | Zmadhon ose zvogëlon gjithë dritaren. |
-| **⑥** | **Testo OCR** | Provon leximin e skanimeve. |
+| **②** | **Shto në DocIndexer** | Zë i klikimit të djathtë të dosjeve në File Explorer; vlen menjëherë. |
+| **③** | **Shkurtore e tastierës** | Tastet e kërkimit të shpejtë (bosh = çaktivizuar). |
+| **④** | **Puna në sfond** | CPU me kompjuterin në përdorim dhe joaktiv, pritja, programet e zëna. |
+| **⑤** | **Anashkalo skedarët më të mëdhenj se (MB)** | Mbi këtë kufi skedarët shkojnë te **Skedarë të mëdhenj**. |
+| **⑥** | **Madhësia e ndërfaqes (%) — nuk ndjek zmadhimin e Windows** | Zmadhon ose zvogëlon gjithë dritaren. |
 
 - **Nisja**: nisja me Windows (vlen menjëherë).
+- **Shto në DocIndexer**: shton zërin në menynë e klikimit të djathtë të dosjeve në File Explorer; vlen menjëherë, pa Ruaj (shih kapitullin 14).
 - **Kërkim i shpejtë**: shkurtorja e tastierës, për shembull `ctrl+alt+d`, `ctrl+shift+f` ose `win+alt+d`; bosh = e çaktivizuar. Nëse shkurtoren e përdor tashmë një program tjetër, shfaqet një paralajmërim.
 - **Puna në sfond**: CPU maksimale ndërsa përdorni PC-në dhe kur është në pushim, pas sa minutash PC-ja konsiderohet në pushim, mbi cilën ngarkesë të programeve të tjera DocIndexer pret, fijet OCR, çdo sa orë rikontrollohen të gjitha dosjet, madhësia maksimale e skedarëve (më të mëdhenjtë shkojnë te **Skedarë të mëdhenj**), madhësia e ndërfaqes (në %, e pavarur nga zmadhimi i Windows; vlen nga nisja e ardhshme). Vlerat e para ndryshojnë edhe me rrëshqitësin e Monitorimit.
 - **Module shtesë**: metadata me ExifTool, teksti i skedarëve brenda arkivave (7-Zip), baza të dhënash SQLite, dBASE/FoxPro dhe Access. Çdo modul i ruan të dhënat veçmas; te Kërkimi zgjidhni ku të kërkohet.
@@ -378,6 +415,10 @@ Kur dritarja është e mbyllur, DocIndexer vazhdon të punojë dhe mbetet si iko
 - **Dil**, që e mbyll vërtet programin.
 
 Nëse e hapni DocIndexer për herë të dytë nuk niset një kopje e re: shfaqet dritarja e atij që po punon tashmë. Nisja me Windows vlen vetëm për përdoruesin tuaj dhe nuk kërkon të drejta administratori.
+
+### Shtimi i një dosjeje me klikim të djathtë
+
+Me opsionin **Shto në DocIndexer** aktiv (Cilësimet › Konfigurimi › Nisja), klikimi i djathtë mbi një dosje në File Explorer shfaq **Shto në DocIndexer**: dosja shtohet te dosjet e monitoruara dhe indeksimi nis menjëherë, edhe nëse DocIndexer ishte i hapur. Në Windows 11 zëri është te «Shfaq më shumë opsione» (ose Shift+F10). Nëse dosja monitorohet tashmë, ose ndodhet brenda një dosjeje të monitoruar, DocIndexer e njofton dhe nuk ndryshon asgjë; nëse përmban dosje që monitorohen tashmë, zë vendin e tyre. Nuk nevojiten të drejta administratori.
 
 ## 15. Probleme të shpeshta
 

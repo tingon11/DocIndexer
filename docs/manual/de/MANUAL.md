@@ -31,6 +31,29 @@ DocIndexer führt einen Index über den Text der Dokumente in den Ordnern, die S
 
 ## 2. Erster Start: Einrichtungsassistent
 
+### Sprache und Nutzungsbedingungen
+
+Beim allerersten Start fragt DocIndexer nach der Sprache und zeigt dann die Nutzungsbedingungen in dieser Sprache.
+
+![Sprachauswahl](18-welcome-language.png)
+
+| # | Element | Funktion |
+|:--:|---|---|
+| **①** | **Sprache** | Ein Klick wählt die Sprache von Programm und Handbuch. |
+
+![Nutzungsbedingungen](19-terms.png)
+
+| # | Element | Funktion |
+|:--:|---|---|
+| **①** | **Text der Bedingungen** | Muss bis zum Ende gescrollt werden. |
+| **②** | **Hinweis** | Wird grün, wenn alles gelesen ist. |
+| **③** | **Ich lehne ab** | Beendet das Programm. |
+| **④** | **Ich akzeptiere** | Wird am Textende aktiv und führt zur Einrichtung. |
+
+**Ich akzeptiere** wird erst aktiv, wenn Sie den Text bis zum Ende gescrollt haben; **Ich lehne ab** (oder das Schließen des Fensters) beendet das Programm. Die Antwort wird gespeichert: Die Bedingungen werden nur erneut abgefragt, wenn sie sich ändern. Mit der Schaltfläche **Nutzungsbedingungen** neben **📖 Handbuch** können Sie sie jederzeit erneut lesen.
+
+### Geführte Einrichtung
+
 Beim ersten Öffnen fragt DocIndexer, wo es suchen soll.
 
 ![Einrichtungsassistent](01-setup.png)
@@ -63,7 +86,7 @@ Oben befindet sich die Kopfzeile, die immer sichtbar ist:
 - das Menü **Sprache**, das sofort die Sprache des ganzen Programms ändert;
 - die Schaltflächen Minimieren, Maximieren und Schließen. **Das Schließen des Fensters beendet DocIndexer nicht**: Das Fenster wird ausgeblendet und die Arbeit geht weiter (siehe [Kapitel 14](#14-symbol-neben-der-uhr-und-start-mit-windows)).
 
-Darunter liegen die Registerkarten **Monitor**, **Suche**, **Wichtig**, **Dokumente**, **Duplikate** und **Einstellungen**. Rechts neben den Registerkarten öffnet **📖 Handbuch** dieses Handbuch in der Sprache des Programms.
+Darunter liegen die Registerkarten **Monitor**, **Suche**, **Wichtig**, **Dokumente**, **Duplikate** und **Einstellungen**. Rechts neben den Registerkarten öffnet **📖 Handbuch** dieses Handbuch in der Sprache des Programms. Daneben zeigt **Nutzungsbedingungen** die beim ersten Start akzeptierten Bedingungen erneut an.
 
 ![Das Handbuch](17-manual.png)
 
@@ -85,13 +108,14 @@ Der Monitor zeigt, wie weit die Indexierung ist.
 |:--:|---|---|
 | **①** | **Registerkarten** | Die Seiten des Programms. |
 | **②** | **📖 Handbuch** | Öffnet dieses Handbuch in der Sprache des Programms. |
-| **③** | **Equalizer** | Bewegt sich, während DocIndexer arbeitet. |
-| **④** | **Sprache** | Ändert die Sprache der Oberfläche. |
-| **⑤** | **Fortschritt** | Wie viel der Dateien schon analysiert ist. |
-| **⑥** | **Pausieren** | Pausiert die Indexierung und setzt sie fort. |
-| **⑦** | **Ordner jetzt prüfen** | Sucht sofort nach neuen oder geänderten Dateien. |
-| **⑧** | **Ressourcen für die Indexierung** | Wie viel CPU genutzt wird und Temperaturgrenzen (Kapitel 5). |
-| **⑨** | **Protokoll** | Die Arbeitsmeldungen, Datei für Datei. |
+| **③** | **Nutzungsbedingungen** | Zeigt die beim ersten Start akzeptierten Bedingungen erneut an. |
+| **④** | **Equalizer** | Bewegt sich, während DocIndexer arbeitet. |
+| **⑤** | **Sprache** | Ändert die Sprache der Oberfläche. |
+| **⑥** | **Fortschritt** | Wie viel der Dateien schon analysiert ist. |
+| **⑦** | **Pausieren** | Pausiert die Indexierung und setzt sie fort. |
+| **⑧** | **Ordner jetzt prüfen** | Sucht sofort nach neuen oder geänderten Dateien. |
+| **⑨** | **Ressourcen für die Indexierung** | Wie viel CPU genutzt wird und Temperaturgrenzen (Kapitel 5). |
+| **⑩** | **Protokoll** | Die Arbeitsmeldungen, Datei für Datei. |
 
 - **Überwachte Ordner**: die Liste unter dem Titel.
 - **Kreisdiagramm** und Felder: **Zu analysierende Dateien** (alle gefundenen Dateien), **Indexiert**, **Offen**, **Übersprungen** (ohne lesbaren Text oder ausgeschlossen) und **Fehler**.
@@ -174,6 +198,18 @@ Der Bereich **Von DocIndexer genutzte Ressourcen** zeigt CPU und RAM, die das Pr
 **Die Ergebnisse.** Über der Tabelle gibt es für jeden gefundenen Dateityp (.pdf, .docx...) eine Schaltfläche mit der Zahl der Ergebnisse: Ein Klick blendet diesen Typ aus oder ein, **Alle** und **Keine** ändern alle. Die Spalten sind Wichtigkeit, Name, Ordner, Seite, Relevanz, Erstellungsdatum und ein Auszug mit den farbigen Wörtern; ein Klick auf den Spaltenkopf sortiert. Unter der Tabelle steht der extrahierte Text der gefundenen Seite mit den hervorgehobenen Wörtern.
 
 **Die Vorschau** rechts zeigt die echte Seite des Dokuments mit umrahmten Treffern: Die Pfeile wechseln die Seite, **−**, **Einpassen** und **+** ändern den Zoom (auch mit dem Mausrad), **◀ Treffer** und **Treffer ▶** springen von Fundstelle zu Fundstelle, **Original öffnen** (oder ein Doppelklick auf das Ergebnis) öffnet die Datei mit ihrem Programm. Bei Office-Dokumenten wird die Vorschau mit Office erstellt und kann einige Sekunden dauern.
+
+### Keine exakten Treffer
+
+Findet eine Suche nichts, versucht DocIndexer es von selbst erneut und toleriert dabei einen Tipp- oder OCR-Fehler pro Wort. Dann erscheint über den Ergebnissen ein roter Hinweis, der einige Male blinkt: **Keine exakten Treffer: Ergebnisse mit 1 Tipp- oder OCR-Fehler**. Prüfen Sie die Ergebnisse: Sie können Wörter enthalten, die dem gesuchten ähneln.
+
+![Keine exakten Treffer](20-near-miss.png)
+
+| # | Element | Funktion |
+|:--:|---|---|
+| **①** | **Suche mit Tippfehler** | Hier fehlt ein Buchstabe. |
+| **②** | **Roter Hinweis** | Blinkt: keine exakten Treffer, angezeigt werden die mit 1 Fehler. |
+| **③** | **Ergebnisse** | Die Dokumente mit dem richtigen Wort. |
 
 ## 7. Editor für reguläre Ausdrücke
 
@@ -332,13 +368,14 @@ Sie sucht schon beim Tippen. Wählen Sie mit den Pfeiltasten ein Ergebnis; **Ein
 | # | Element | Funktion |
 |:--:|---|---|
 | **①** | **Mit Windows starten** | Gilt sofort, ohne Speichern. |
-| **②** | **Tastenkürzel** | Die Tasten der Schnellsuche (leer = aus). |
-| **③** | **Hintergrundarbeit** | CPU bei genutztem und ruhendem PC, Wartezeit, ausgelastete Programme. |
-| **④** | **Dateien größer als (MB) überspringen** | Über dieser Grenze landen Dateien unter **Große Dateien**. |
-| **⑤** | **Größe der Oberfläche (%) — folgt nicht dem Windows-Zoom** | Vergrößert oder verkleinert das ganze Fenster. |
-| **⑥** | **OCR testen** | Testet das Lesen von Scans. |
+| **②** | **Zu DocIndexer hinzufügen** | Rechtsklick-Eintrag für Ordner im Datei-Explorer; gilt sofort. |
+| **③** | **Tastenkürzel** | Die Tasten der Schnellsuche (leer = aus). |
+| **④** | **Hintergrundarbeit** | CPU bei genutztem und ruhendem PC, Wartezeit, ausgelastete Programme. |
+| **⑤** | **Dateien größer als (MB) überspringen** | Über dieser Grenze landen Dateien unter **Große Dateien**. |
+| **⑥** | **Größe der Oberfläche (%) — folgt nicht dem Windows-Zoom** | Vergrößert oder verkleinert das ganze Fenster. |
 
 - **Start**: Start mit Windows (gilt sofort).
+- **Zu DocIndexer hinzufügen**: fügt den Eintrag zum Rechtsklickmenü von Ordnern im Datei-Explorer hinzu; gilt sofort, ohne Speichern (siehe Kapitel 14).
 - **Schnellsuche**: das Tastenkürzel, zum Beispiel `ctrl+alt+d`, `ctrl+shift+f` oder `win+alt+d`; leer = aus. Wird das Kürzel schon von einem anderen Programm verwendet, erscheint ein Hinweis.
 - **Hintergrundarbeit**: maximale CPU während der PC-Nutzung und im Leerlauf, nach wie vielen Minuten der PC als untätig gilt, ab welcher Last anderer Programme DocIndexer wartet, OCR-Threads, alle wie viele Stunden alle Ordner erneut geprüft werden, maximale Dateigröße (größere landen in **Große Dateien**), Größe der Oberfläche (in %, unabhängig vom Windows-Zoom; gilt ab dem nächsten Start). Die ersten Werte ändern sich auch mit dem Regler im Monitor.
 - **Zusatzmodule**: Metadaten mit ExifTool, Text von Dateien in Archiven (7-Zip), SQLite-, dBASE/FoxPro- und Access-Datenbanken. Jedes Modul speichert seine Daten getrennt; in der Suche wählen Sie, worin gesucht wird.
@@ -378,6 +415,10 @@ Ist das Fenster geschlossen, arbeitet DocIndexer weiter und bleibt als Symbol ne
 - **Beenden**, das das Programm wirklich schließt.
 
 Starten Sie DocIndexer ein zweites Mal, startet keine neue Kopie: Es erscheint das Fenster der bereits laufenden. Der Start mit Windows gilt nur für Ihr Benutzerkonto und braucht keine Administratorrechte.
+
+### Einen Ordner per Rechtsklick hinzufügen
+
+Ist die Option **Zu DocIndexer hinzufügen** aktiv (Einstellungen › Konfiguration › Start), zeigt ein Rechtsklick auf einen Ordner im Datei-Explorer **Zu DocIndexer hinzufügen**: Der Ordner kommt zu den überwachten Ordnern und die Indexierung beginnt sofort, auch wenn DocIndexer schon geöffnet war. Unter Windows 11 steht der Eintrag unter „Weitere Optionen anzeigen“ (oder Umschalt+F10). Ist der Ordner schon überwacht oder liegt er in einem überwachten Ordner, meldet DocIndexer das und ändert nichts; enthält er bereits überwachte Ordner, tritt er an ihre Stelle. Administratorrechte sind nicht nötig.
 
 ## 15. Häufige Probleme
 
