@@ -1251,9 +1251,9 @@ class SearchPage(ctk.CTkFrame):
         self.query = ctk.CTkTextbox(row, height=96, wrap="none", border_width=2,
                                     font=ctk.CTkFont(size=14))
         self.query.pack(side="left", fill="x", expand=True, padx=(0, 8))
-        self.query.bind("<Control-Return>", lambda e: (self.search(), "break")[1])
-        self.query.bind("<KeyRelease>", lambda e: self.color_query())
-        self.query.bind("<<Paste>>", lambda e: self.after(10, self.color_query))
+        self.query.bind("<Control-Return>", lambda e=None: (self.search(), "break")[1])
+        self.query.bind("<KeyRelease>", lambda e=None: self.color_query())
+        self.query.bind("<<Paste>>", lambda e=None: self.after(10, self.color_query))
         side = ctk.CTkFrame(row, fg_color="transparent")
         side.pack(side="left", fill="y")
         ctk.CTkButton(side, text=tr("Cerca"), width=110, height=36, command=self.search).pack(pady=(0, 6))
@@ -1347,7 +1347,7 @@ class SearchPage(ctk.CTkFrame):
         results_box = tk.Frame(left, bg=theme.BG)
         self.ext_bar = tk.Frame(results_box, bg=theme.BG)
         self.ext_bar.pack(fill="x")
-        self.ext_bar.bind("<Configure>", lambda e: self._flow_ext(e.width))
+        self.ext_bar.bind("<Configure>", lambda e=None: self._flow_ext(getattr(e, "width", None)))
         self._ext_off: set[str] = set()
         self._ext_btns: dict[str, ctk.CTkButton] = {}
         self._ext_extra: list = []
@@ -1358,7 +1358,7 @@ class SearchPage(ctk.CTkFrame):
         self._rows: list[tuple[dict, list]] = []
         self._sort = None
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
-        self.tree.bind("<<ResultOpen>>", lambda e: self.preview.open_original())
+        self.tree.bind("<<ResultOpen>>", lambda e=None: self.preview.open_original())
         left.add(results_box, minsize=140, height=300)
 
         bottom = ctk.CTkFrame(left, fg_color="transparent")
