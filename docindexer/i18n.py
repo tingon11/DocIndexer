@@ -20,7 +20,7 @@ STRINGS = {**STRINGS, **_DAEMON, **_EXTRA}
 
 LANGUAGES = {
     "it": "Italiano", "en": "English", "fr": "Français", "de": "Deutsch", "es": "Español",
-    "el": "Ελληνικά", "sq": "Shqip",
+    "el": "Ελληνικά", "sq": "Shqip", "pl": "Polski",
 }
 _current = "it"
 

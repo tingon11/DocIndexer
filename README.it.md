@@ -8,7 +8,7 @@ e scansioni (**OCR con RapidOCR**), e-mail, pagine web, database SQLite, grafi e
 sono**: nel database vanno solo il percorso e il testo. La ricerca è full-text (SQLite FTS5), fuzzy, per nome
 file o con **espressioni regolari**, con un'anteprima che evidenzia i risultati.
 
-L'OCR usa RapidOCR, l'interfaccia ha il tema di PCSnex ed è in sette lingue.
+L'OCR usa RapidOCR, l'interfaccia ha il tema di PCSnex ed è in otto lingue.
 
 ## Come funziona
 
@@ -162,11 +162,11 @@ Windows, lingua.
 
 ## Lingue dell'interfaccia
 
-Italiano, English, Français, Deutsch, Español, Ελληνικά, Shqip, dal menu **Lingua** in alto a destra.
+Italiano, English, Français, Deutsch, Español, Ελληνικά, Shqip, Polski, dal menu **Lingua** in alto a destra.
 
 ## Manuale
 
-Il manuale utente, con gli screenshot, è in `docs/manual/<lingua>/MANUAL.md` in tutte e sette le lingue (indice in
+Il manuale utente, con gli screenshot, è in `docs/manual/<lingua>/MANUAL.md` in tutte e otto le lingue (indice in
 [MANUAL.md](MANUAL.md)). Nel programma si apre da **📖 Manuale**, a destra delle schede, o dal menu dell'icona
 vicino all'orologio, nella lingua scelta. Gli screenshot sono stati fatti su un profilo di prova
 separato, con documenti inventati.
@@ -183,5 +183,5 @@ modificate e non può usare il nome e il logo DocIndexer per una versione modifi
 I componenti di terze parti e le loro licenze sono in `THIRD_PARTY_NOTICES.md`.
 
 Alla prima apertura il programma chiede la lingua e poi mostra i termini d'uso e l'esclusione di
-responsabilità, da accettare per usarlo; il testo, in tutte e sette le lingue, è in [TERMS.md](TERMS.md) e si
+responsabilità, da accettare per usarlo; il testo, in tutte e otto le lingue, è in [TERMS.md](TERMS.md) e si
 può rileggere da **Termini d'uso**, accanto a **📖 Manuale**.

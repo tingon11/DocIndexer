@@ -1,6 +1,6 @@
 # DocIndexer — User manual / Manuale utente
 
-The user manual is available in 7 languages, each with screenshots of the program.
+The user manual is available in 8 languages, each with screenshots of the program.
 Inside DocIndexer it opens from **📖 Manual**, to the right of the tabs (and from the menu of the icon next to the clock), in the language chosen at the top right.
 
 | Language | Manual |
@@ -12,6 +12,7 @@ Inside DocIndexer it opens from **📖 Manual**, to the right of the tabs (and f
 | 🇪🇸 Español | [DocIndexer — Manual de usuario](docs/manual/es/MANUAL.md) |
 | 🇬🇷 Ελληνικά | [DocIndexer — Εγχειρίδιο χρήσης](docs/manual/el/MANUAL.md) |
 | 🇦🇱 Shqip | [DocIndexer — Manuali i përdoruesit](docs/manual/sq/MANUAL.md) |
+| 🇵🇱 Polski | [DocIndexer — Podręcznik użytkownika](docs/manual/pl/MANUAL.md) |
 
 The screenshots were taken on a separate test profile with invented, generic documents.
 

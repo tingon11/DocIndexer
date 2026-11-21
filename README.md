@@ -8,7 +8,7 @@ photos and scans (**OCR with RapidOCR**), e-mails, web pages, SQLite databases, 
 **stay where they are**: the database stores only their path and their text. Search is full-text (SQLite
 FTS5), fuzzy, by file name or with **regular expressions**, with a preview that highlights the matches.
 
-OCR runs on RapidOCR, the interface uses the PCSnex theme and is available in seven languages.
+OCR runs on RapidOCR, the interface uses the PCSnex theme and is available in eight languages.
 
 ## How it works
 
@@ -158,11 +158,11 @@ interval, OCR model and DPI, database path, start with Windows, language.
 
 ## Interface languages
 
-Italiano, English, Français, Deutsch, Español, Ελληνικά, Shqip, from the **Language** menu at the top right.
+Italiano, English, Français, Deutsch, Español, Ελληνικά, Shqip, Polski, from the **Language** menu at the top right.
 
 ## Manual
 
-The user manual, with screenshots, is in `docs/manual/<language>/MANUAL.md` in all seven languages (index in
+The user manual, with screenshots, is in `docs/manual/<language>/MANUAL.md` in all eight languages (index in
 [MANUAL.md](MANUAL.md)). Inside the program it opens from **📖 Manual**, to the right of the tabs, or from the menu of
 the icon next to the clock, in the chosen language. The screenshots were taken on a separate test profile,
 with invented documents.
@@ -179,5 +179,5 @@ such, and may not use the DocIndexer name and logo for a modified version. No wa
 Third-party components and their licenses are listed in `THIRD_PARTY_NOTICES.md`.
 
 On first launch the program asks for the language and then shows the terms of use and disclaimer of
-liability, which must be accepted to use it; the text, in all seven languages, is in [TERMS.md](TERMS.md) and
+liability, which must be accepted to use it; the text, in all eight languages, is in [TERMS.md](TERMS.md) and
 can be read again from **Terms of use**, next to **📖 Manual**.

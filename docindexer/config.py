@@ -184,7 +184,7 @@ class AppConfig:
     quick_hotkey: str = "ctrl+alt+d"
     # dimensione dell'interfaccia in %, indipendente dallo zoom di Windows (100 = come a zoom 100%)
     ui_scale: int = 100
-    # lingua dell'interfaccia: it en fr de es el sq
+    # lingua dell'interfaccia: it en fr de es el sq pl
     language: str = "it"
     # termini d'uso accettati alla prima apertura (terms.TERMS_VERSION; vuoto = mai) e quando
     terms_accepted: str = ""

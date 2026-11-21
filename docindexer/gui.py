@@ -2976,8 +2976,18 @@ class App(ctk.CTk):
         self.pages["search"].refresh_folders()
         self.show(self.current)
 
+    def _ensure_ocr_model(self):
+        """Il modello OCR principale è incluso nel programma: va copiato in tools\\rapidocr PRIMA che parta
+        l'indicizzazione, altrimenti al primo avvio le immagini lette subito finiscono in errore."""
+        try:
+            if not tools.check_model(self.cfg, ocr.DEFAULT_MODEL).ok:
+                tools.install_model(self.cfg, lambda _m: None)
+        except Exception:  # noqa: BLE001
+            pass
+
     def _run_indexer(self):
         if self.indexer is None:
+            self._ensure_ocr_model()
             self.indexer = Indexer(self.cfg, self.db)
             self.indexer.start()
         else:
@@ -3324,12 +3334,7 @@ class App(ctk.CTk):
             self.cfg.ocr_model = current
 
     def check_tools(self):
-        # il modello OCR principale è incluso nel programma: se manca in tools\rapidocr si copia da solo
-        if not tools.check_model(self.cfg, ocr.DEFAULT_MODEL).ok:
-            try:
-                tools.install_model(self.cfg, lambda _m: None)
-            except Exception:  # noqa: BLE001
-                pass
+        self._ensure_ocr_model()           # di solito già fatto all'avvio dell'indicizzazione
         missing = [s.name for s in tools.check_all(self.cfg) if not s.ok and not s.optional]
         if missing and messagebox.askyesno(
                 tr("Strumenti mancanti"),

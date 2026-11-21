@@ -1,6 +1,6 @@
 # DocIndexer — Copyright (C) 2026 Andrea Cumini <andrea@osintinfo.net> — www.osintinfo.net
 # Licenza GNU AGPL-3.0 con i termini aggiuntivi del file NOTICE (attribuzione all'autore).
-"""Termini d'uso ed esclusione di responsabilità, nelle 7 lingue dell'interfaccia (come in DroidSnex).
+"""Termini d'uso ed esclusione di responsabilità, nelle 8 lingue dell'interfaccia (come in DroidSnex).
 
 Vengono mostrati alla prima apertura (welcome.py), dopo la scelta della lingua; l'accettazione viene
 salvata in config.json con la versione del testo (TERMS_VERSION) e la data: se la versione cambia,
@@ -226,7 +226,37 @@ Këto kushte mund të përditësohen në versionet e mëvonshme të softuerit; n
 Duke shtypur "Pranoj" konfirmoni se i keni lexuar dhe pranuar të gjitha pikat e mësipërme, se me DocIndexer indeksoni vetëm skedarë që keni të drejtë t'i përpunoni, dhe se merrni përsipër çdo përgjegjësi për përdorimin që bëni.
 """
 
-TEXTS = {"it": _IT, "en": _EN, "fr": _FR, "de": _DE, "es": _ES, "el": _EL, "sq": _SQ}
+_PL = """\
+WARUNKI KORZYSTANIA I WYŁĄCZENIE ODPOWIEDZIALNOŚCI — DocIndexer
+Wersja {v} z dnia {d}
+
+Przeczytaj uważnie. Naciskając „Akceptuję”, oświadczasz, że przeczytałeś(-aś), zrozumiałeś(-aś) i w pełni zaakceptowałeś(-aś) niniejsze warunki. Jeśli ich nie akceptujesz, naciśnij „Odrzucam”: program zostanie zamknięty i nie możesz z niego korzystać.
+
+1. CZYM JEST DOCINDEXER
+DocIndexer to program dla systemu Windows, który odczytuje pliki w wybranych przez Ciebie folderach (dokumenty, arkusze kalkulacyjne, prezentacje, pliki PDF, obrazy, pocztę e-mail, archiwa, bazy danych i inne), wyodrębnia z nich tekst, również za pomocą optycznego rozpoznawania znaków (OCR), i przechowuje go w lokalnej bazie danych, aby umożliwić jego przeszukiwanie. Może uruchamiać się razem z systemem Windows i pracować w tle, wykorzystując czas bezczynności komputera w ustalonych przez Ciebie limitach obciążenia procesora i temperatury. Pliki pozostają tam, gdzie są: program ich nie modyfikuje, nie przenosi ani nie usuwa.
+
+2. DOZWOLONE UŻYTKOWANIE I ODPOWIEDZIALNOŚĆ UŻYTKOWNIKA
+Możesz indeksować wyłącznie pliki i foldery, które należą do Ciebie lub do których przeglądania i przetwarzania masz prawo. Ponosisz wyłączną odpowiedzialność za: (a) sprawdzenie, czy sposób korzystania z programu jest zgodny z prawem, w szczególności gdy pliki zawierają dane osobowe innych osób, dokumenty służbowe lub informacje objęte tajemnicą bądź poufnością; (b) uzyskanie wszelkich zgód i upoważnień wymaganych przez prawo, w tym przez przepisy o ochronie danych osobowych; (c) zabezpieczenie bazy danych, kopii zapasowych, eksportów i podglądów, które zawierają tekst Twoich dokumentów i mogą w związku z tym zawierać dane osobowe, dane uwierzytelniające lub informacje poufne. Zabronione jest używanie oprogramowania do gromadzenia lub przeglądania cudzych danych bez upoważnienia lub w jakimkolwiek celu niezgodnym z prawem. Autor nie kontroluje i nie może kontrolować sposobu, w jaki korzystasz z programu.
+
+3. BRAK GWARANCJI („TAK JAK JEST”)
+W MAKSYMALNYM ZAKRESIE DOZWOLONYM PRZEZ OBOWIĄZUJĄCE PRAWO OPROGRAMOWANIE JEST DOSTARCZANE „TAK JAK JEST” I „W MIARĘ DOSTĘPNOŚCI”, BEZ JAKIEJKOLWIEK GWARANCJI, WYRAŹNEJ LUB DOROZUMIANEJ, W TYM MIĘDZY INNYMI DOROZUMIANYCH GWARANCJI PRZYDATNOŚCI HANDLOWEJ, PRZYDATNOŚCI DO OKREŚLONEGO CELU, NIENARUSZANIA PRAW OSÓB TRZECICH, DOKŁADNOŚCI, DOSTĘPNOŚCI I BRAKU BŁĘDÓW. CAŁE RYZYKO ZWIĄZANE Z JAKOŚCIĄ I DZIAŁANIEM OPROGRAMOWANIA PONOSISZ TY. JEŻELI OPROGRAMOWANIE OKAŻE SIĘ WADLIWE, PONOSISZ KOSZTY WSZELKIEJ NIEZBĘDNEJ OBSŁUGI, NAPRAWY LUB KOREKTY. W szczególności nie gwarantuje się, że: wyodrębniony tekst i wyniki OCR są kompletne lub dokładne; wyszukiwanie znajdzie każdy dokument zawierający dane wyrażenie; rozpoznawanie języka, duplikatów i metadanych jest prawidłowe; limity obciążenia procesora i temperatury są zawsze przestrzegane lub chronią sprzęt; program nie spowalnia komputera ani nie zakłóca działania innych programów; oprogramowanie jest wolne od podatności. Nie używaj DocIndexer jako jedynego narzędzia przy podejmowaniu decyzji prawnych, dochodzeniowych, medycznych lub finansowych: zawsze sprawdzaj oryginalny dokument.
+
+4. OGRANICZENIE ODPOWIEDZIALNOŚCI
+W ŻADNYM WYPADKU, Z WYJĄTKIEM SYTUACJI, W KTÓRYCH BEZWZGLĘDNIE OBOWIĄZUJĄCE PRZEPISY STANOWIĄ INACZEJ, AUTOR, WSPÓŁTWÓRCY ANI DYSTRYBUTORZY OPROGRAMOWANIA NIE PONOSZĄ ODPOWIEDZIALNOŚCI WOBEC CIEBIE ANI WOBEC OSÓB TRZECICH ZA JAKIEKOLWIEK SZKODY BEZPOŚREDNIE, POŚREDNIE, PRZYPADKOWE, SZCZEGÓLNE, PRZYKŁADOWE, KARNE LUB WTÓRNE (W TYM MIĘDZY INNYMI UTRATĘ LUB USZKODZENIE DANYCH ALBO BAZY DANYCH, UTRATĘ ZYSKÓW, RENOMY LUB MOŻLIWOŚCI, PRZERWĘ W DZIAŁALNOŚCI, AWARIĘ, PRZEGRZANIE LUB NIEPRAWIDŁOWE DZIAŁANIE KOMPUTERA, KOSZTY USŁUG ZASTĘPCZYCH, KARY, ROSZCZENIA OSÓB TRZECICH) WYNIKAJĄCE Z UŻYWANIA LUB NIEMOŻNOŚCI UŻYWANIA OPROGRAMOWANIA, Z DECYZJI PODJĘTYCH NA PODSTAWIE JEGO WYNIKÓW, Z OTWARCIA USZKODZONYCH LUB ZŁOŚLIWYCH PLIKÓW PODCZAS INDEKSOWANIA, Z UŻYCIA NARZĘDZI INNYCH FIRM POBRANYCH LUB URUCHOMIONYCH PRZEZ PROGRAM (modele OCR, ExifTool, 7-Zip, Microsoft Office) ANI Z PRZYWRÓCENIA KOPII ZAPASOWYCH, NAWET JEŚLI POINFORMOWANO O MOŻLIWOŚCI WYSTĄPIENIA TAKICH SZKÓD I NIEZALEŻNIE OD PODSTAWY PRAWNEJ ROSZCZENIA (UMOWA, CZYN NIEDOZWOLONY, ODPOWIEDZIALNOŚĆ NA ZASADZIE RYZYKA LUB INNA). W jurysdykcjach, które nie dopuszczają całkowitego wyłączenia odpowiedzialności, odpowiedzialność jest ograniczona w maksymalnym dozwolonym zakresie.
+
+5. DANE, PRYWATNOŚĆ I WITRYNY OSÓB TRZECICH
+Oprogramowanie działa lokalnie i nie wysyła żadnych danych autorowi ani nikomu innemu: tekst Twoich dokumentów, baza danych i Twoje wyszukiwania pozostają na Twoim komputerze. Łączy się z Internetem tylko wtedy, gdy zdecydujesz się pobrać opcjonalne narzędzia (modele OCR, ExifTool, 7-Zip) z ich witryn lub serwerów lustrzanych, które otrzymują zwykłe informacje o połączeniu (takie jak adres IP) i podlegają własnym warunkom. Autor nie odpowiada za te witryny, ich dostępność ani za zawartość rozpowszechnianych przez nie plików. Bazę danych może odczytać każdy, kto ma dostęp do Twojego komputera lub Twoich kopii zapasowych: chroń ją tak, jak chroniłbyś(-abyś) oryginalne dokumenty.
+
+6. LICENCJE I KOMPONENTY INNYCH FIRM
+Oprogramowanie jest rozpowszechniane na licencji GNU AGPL v3 z dodatkowymi warunkami zawartymi w pliku NOTICE (pliki LICENSE i NOTICE); licencje komponentów innych firm (PyMuPDF, RapidOCR i modele PaddleOCR, ONNX Runtime, CustomTkinter, Pillow, ExifTool, 7-Zip i inne) znajdują się w pliku THIRD_PARTY_NOTICES.md oraz w folderze LICENSES. Masz obowiązek ich przestrzegać. Niniejsze warunki stanowią uzupełnienie AGPL i nie ograniczają przyznanych przez nią praw do kopiowania, modyfikowania i rozpowszechniania kodu; punkty 3 i 4 powtarzają i uzupełniają sekcje 15 i 16 AGPL v3.
+
+7. ZMIANY, PRAWO WŁAŚCIWE I POSTANOWIENIA KOŃCOWE
+Niniejsze warunki mogą zostać zaktualizowane w kolejnych wersjach oprogramowania; przy pierwszym uruchomieniu wersji z nowymi warunkami zostaniesz ponownie poproszony(-a) o ich akceptację. Jeżeli którekolwiek postanowienie okaże się nieważne, pozostałe pozostają w mocy. Z zastrzeżeniem bezwzględnie obowiązujących przepisów chroniących Ciebie, zastosowanie ma prawo włoskie. Oprogramowanie nie jest przeznaczone dla osób niepełnoletnich ani do zastosowań, w których awaria mogłaby spowodować obrażenia ciała lub szkody w mieniu.
+
+Naciskając „Akceptuję”, potwierdzasz, że przeczytałeś(-aś) i zaakceptowałeś(-aś) wszystkie powyższe punkty, że za pomocą DocIndexer indeksujesz wyłącznie pliki, do których przetwarzania masz prawo, oraz że ponosisz pełną odpowiedzialność za sposób korzystania z programu.
+"""
+
+TEXTS = {"it": _IT, "en": _EN, "fr": _FR, "de": _DE, "es": _ES, "el": _EL, "sq": _SQ, "pl": _PL}
 
 # etichette nella lingua dei termini (non passano da tr: seguono la lingua scelta nella finestra)
 LABELS = {
@@ -244,6 +274,8 @@ LABELS = {
            "Διαβάστε τους όρους μέχρι το τέλος: με Απορρίπτω το πρόγραμμα κλείνει."),
     "sq": ("Kushtet e përdorimit", "Pranoj", "Refuzoj", "Zgjidhni gjuhën",
            "Lexoni kushtet deri në fund: me Refuzoj programi mbyllet."),
+    "pl": ("Warunki korzystania", "Akceptuję", "Odrzucam", "Wybierz język",
+           "Przeczytaj warunki do końca: po naciśnięciu Odrzucam program zostanie zamknięty."),
 }
 
 
