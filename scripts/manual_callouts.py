@@ -39,6 +39,18 @@ def visible(w) -> bool:
         return False
 
 
+def overflow(w) -> int:
+    """Di quanti pixel w esce (sopra o sotto) dalla parte visibile del riquadro scorrevole che lo contiene; 0 se si vede tutto."""
+    c = w.master
+    while c is not None and not isinstance(c, tk.Canvas):
+        c = c.master
+    if c is None:
+        return 0
+    top, bottom = w.winfo_rooty(), w.winfo_rooty() + w.winfo_height()
+    ctop, cbottom = c.winfo_rooty(), c.winfo_rooty() + c.winfo_height()
+    return max(0, bottom - cbottom, ctop - top)
+
+
 def T(root, key, nth=0, mode="eq", up=0, cls=ctk.CTkBaseClass, raw=False):
     """Widget CTk visibile (della classe cls) il cui testo è tr(key) (mode: eq, prefix, contains).
     raw=True: key è già il testo da cercare (per i testi che non passano da tr, come i termini d'uso)."""
@@ -234,7 +246,7 @@ def rects(targets, x0, y0, size):
     out = []
     for t in targets:
         group = [w for w in (t if isinstance(t, (list, tuple)) else [t]) if w is not None]
-        group = [w for w in group if visible(w)]
+        group = [w for w in group if visible(w) and not overflow(w)]   # tagliati dallo scorrimento: no
         if not group:
             out.append(None)
             continue

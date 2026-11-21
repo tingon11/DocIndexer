@@ -241,7 +241,7 @@ from PIL import Image, ImageGrab  # noqa: E402
 from docindexer import daemon_ui, gui, manual, quick, saved_ui, shellmenu, welcome  # noqa: E402
 from docindexer.i18n import LANGUAGES, tr  # noqa: E402
 from docindexer.regexlib import RegexEditor  # noqa: E402
-from manual_callouts import BG, CALLOUTS, PAD, draw, rects  # noqa: E402  (frecce e numeri sugli screenshot)
+from manual_callouts import BG, CALLOUTS, PAD, draw, overflow, rects, visible  # noqa: E402  (frecce e numeri sugli screenshot)
 
 # solo per questo profilo di prova: nessun effetto su Windows né sul DocIndexer già aperto
 daemon_ui.set_autostart = lambda enabled: True
@@ -289,6 +289,22 @@ def grab(win, path: Path, widgets=None, marks=None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     img.convert("RGB").save(path, optimize=True)
     print("  ", path.relative_to(OUT.parent.parent) if OUT.parent.parent in path.parents else path, flush=True)
+
+
+def fit(win, widgets) -> str:
+    """Allunga la finestra (fino all'altezza dello schermo) finché i widget non sono più tagliati dal loro
+    riquadro scorrevole. Restituisce la geometria di prima, da rimettere dopo lo screenshot."""
+    old = win.tk.call("wm", "geometry", win._w)
+    max_h = win.winfo_screenheight() - 60
+    for _ in range(8):
+        win.update_idletasks()
+        win.update()
+        over = max((overflow(w) for w in widgets if w is not None and visible(w)), default=0)
+        h = min(win.winfo_height() + over + 24, max_h)
+        if over <= 0 or h <= win.winfo_height():
+            break
+        win.tk.call("wm", "geometry", win._w, f"{win.winfo_width()}x{h}+0+0")
+    return old
 
 
 def front(win) -> None:
@@ -503,7 +519,18 @@ class Shots:
                           ("14-settings-tools", "Strumenti esterni"), ("15-settings-backup", "Backup")):
             st.tabs.set(tr(tab))
             yield 2.5 if tab == "Strumenti esterni" else 1
+            old = None
+            if tab == "Configurazione":       # le ultime righe del modulo devono vedersi intere
+                try:
+                    rows = [w for t in CALLOUTS[name](self, app) for w in (t if isinstance(t, list) else [t])]
+                    old = fit(app, rows)
+                except Exception:  # noqa: BLE001
+                    traceback.print_exc()
+                yield 1
             self.shot(app, name)
+            if old:
+                app.tk.call("wm", "geometry", app._w, old)
+                yield 0.5
         app.show("monitor")
 
         # --- ricerca rapida
