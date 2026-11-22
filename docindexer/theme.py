@@ -327,6 +327,59 @@ def scaling(widget) -> float:
     return ctk.ScalingTracker.get_widget_scaling(widget)
 
 
+def px(widget, n: float) -> int:
+    """Logical size -> physical pixels, for plain tk/ttk widgets (Canvas, Treeview columns, PanedWindow),
+    which CustomTkinter does not scale. CTk widgets take logical sizes and must not use this."""
+    return int(round(n * (scaling(widget) or 1.0)))
+
+
+def autowrap(label, max_width: int | None = None, pad: int = 0):
+    """Wrap a CTkLabel's text at the width it is actually given (it must be packed with fill="x" or
+    gridded with sticky "ew"), so long sentences never run past the window on small or zoomed screens.
+    max_width (logical) keeps lines readable on very wide windows."""
+    def on_configure(e):
+        w = int(e.width / (scaling(label) or 1.0)) - pad
+        if max_width:
+            w = min(w, max_width)
+        w = max(120, w)
+        if abs(w - getattr(label, "_autowrap_w", 0)) > 3:
+            label._autowrap_w = w
+            label.configure(wraplength=w)
+
+    tk.Misc.bind(label, "<Configure>", on_configure, add="+")   # the outer frame, in physical pixels
+    return label
+
+
+_CHECK_IMAGES: dict = {}
+
+
+def check_images(widget):
+    """(off, on) images for plain tk.Checkbuttons, sized with the UI zoom: the native Windows indicator
+    stays 13 px at any DPI and becomes a speck on 4K screens."""
+    from PIL import Image, ImageDraw, ImageTk
+
+    s = scaling(widget) or 1.0
+    key = round(s, 2)
+    if key not in _CHECK_IMAGES:
+        n = max(12, round(14 * s))
+        big = n * 4                                     # drawn large and reduced: soft edges
+        pics = []
+        for on in (False, True):
+            img = Image.new("RGBA", (big + 4 * max(2, round(4 * s)), big), (0, 0, 0, 0))   # + gap to the text
+            d = ImageDraw.Draw(img)
+            r = big // 5
+            if on:
+                d.rounded_rectangle((0, 0, big - 1, big - 1), r, fill=BTN)
+                w = max(4, big // 8)
+                d.line([(big * 0.22, big * 0.52), (big * 0.42, big * 0.72), (big * 0.78, big * 0.3)],
+                       fill="#ffffff", width=w, joint="curve")
+            else:
+                d.rounded_rectangle((0, 0, big - 1, big - 1), r, outline=BORDER_STRONG, width=max(4, big // 10))
+            pics.append(ImageTk.PhotoImage(img.resize((img.width // 4, n), Image.LANCZOS), master=widget))
+        _CHECK_IMAGES[key] = tuple(pics)
+    return _CHECK_IMAGES[key]
+
+
 def window_scaling(window) -> float:
     return ctk.ScalingTracker.get_window_scaling(window) or 1.0
 
@@ -355,7 +408,7 @@ def style_tables(root) -> None:
         foreground=TEXT_DIM,
         borderwidth=0,
         relief="flat",
-        padding=(8, 6),
+        padding=(px(root, 8), px(root, 6)),
         font=(mono_font(), 9, "bold"),
     )
     style.map("Treeview.Heading", background=[("active", HOVER)])

@@ -61,10 +61,11 @@ class QuickSearch(ctk.CTkToplevel):
                 ("date", tr("Modificato"), 130))
         self.tree = ttk.Treeview(frame, columns=[c[0] for c in cols], show="tree headings", selectmode="browse")
         self.tree.heading("#0", text=tr("Imp."), anchor="w")
-        self.tree.column("#0", width=84, stretch=False)
+        # Treeview widths are physical pixels: scale the logical widths like the rest of the UI
+        self.tree.column("#0", width=theme.px(self.tree, 84), stretch=False)
         for key, title, width in cols:
             self.tree.heading(key, text=title, anchor="w")
-            self.tree.column(key, width=width, anchor="w", stretch=key in ("name", "folder"))
+            self.tree.column(key, width=theme.px(self.tree, width), anchor="w", stretch=key in ("name", "folder"))
         sb = ctk.CTkScrollbar(frame, command=self.tree.yview)
         self.tree.configure(yscrollcommand=sb.set)
         self.tree.pack(side="left", fill="both", expand=True)

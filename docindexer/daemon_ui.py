@@ -53,6 +53,7 @@ class ActivityPulse(tk.Canvas):
     OFFICE = ("docx", "doc", "xlsx", "xls", "pptx", "ppt", "odt", "ods", "odp", "rtf")
 
     def __init__(self, master, app, height=38):
+        height = theme.px(master, height)          # tk.Canvas sizes are physical pixels
         super().__init__(master, height=height, bg=theme.BG, highlightthickness=0, bd=0)
         self.app = app
         self.h = height
@@ -71,10 +72,11 @@ class ActivityPulse(tk.Canvas):
 
     def _layout(self):
         w = max(60, self.winfo_width())
-        if w == self._width:
+        h = max(10, self.winfo_height())
+        if (w, h) == (self._width, self.h):
             return
-        self._width = w
-        bar_w = max(3.0, min(14.0, w / self.BARS))
+        self._width, self.h = w, h
+        bar_w = max(3.0, min(theme.px(self, 14), w / self.BARS))
         x0 = (w - bar_w * self.BARS) / 2
         seg_h = (self.h - 4) / self.SEGS
         for i, col in enumerate(self.cells):
@@ -340,16 +342,18 @@ class Pie(tk.Canvas):
     """Grafico a torta (ad anello) con legenda: indicizzati, da fare, saltati, errori."""
 
     def __init__(self, master, size=220):
+        size = theme.px(master, size)              # tk.Canvas sizes are physical pixels
         super().__init__(master, width=size, height=size, bg=theme.PANEL, highlightthickness=0)
         self.size = size
 
     def draw(self, parts: list[tuple[str, int, str]], center_text: str, sub: str = ""):
         self.delete("all")
-        s, pad = self.size, 10
+        k = self.size / 220                       # the drawing below is laid out for a 220 px ring
+        s, pad, ring = self.size, 10 * k, 18 * k
         total = sum(v for _l, v, _c in parts)
         box = (pad, pad, s - pad, s - pad)
         if total <= 0:
-            self.create_oval(*box, outline=theme.BORDER_STRONG, width=18)
+            self.create_oval(*box, outline=theme.BORDER_STRONG, width=ring)
         else:
             start = 90.0
             shown = [(v, c) for _l, v, c in parts if v > 0]
@@ -361,14 +365,14 @@ class Pie(tk.Canvas):
             for (value, color), extent in zip(shown, extents):
                 extent = -extent
                 if abs(extent) >= 359.99:
-                    self.create_oval(*box, outline=color, width=18)
+                    self.create_oval(*box, outline=color, width=ring)
                 else:
-                    self.create_arc(*box, start=start, extent=extent, style="arc", outline=color, width=18)
+                    self.create_arc(*box, start=start, extent=extent, style="arc", outline=color, width=ring)
                 start += extent
-        self.create_text(s / 2, s / 2 - 8, text=center_text, fill=theme.TEXT,
+        self.create_text(s / 2, s / 2 - 8 * k, text=center_text, fill=theme.TEXT,
                          font=(theme.ui_font(), 20, "bold"))
         if sub:
-            self.create_text(s / 2, s / 2 + 18, text=sub, fill=theme.TEXT_DIM, font=(theme.mono_font(), 9))
+            self.create_text(s / 2, s / 2 + 18 * k, text=sub, fill=theme.TEXT_DIM, font=(theme.mono_font(), 9))
 
 
 # ===================================================================== risorse
@@ -376,6 +380,7 @@ class Sparkline(tk.Canvas):
     """Andamento degli ultimi valori (es. CPU negli ultimi 2 minuti), con linea del limite."""
 
     def __init__(self, master, width=260, height=44, color=theme.ACCENT):
+        width, height = theme.px(master, width), theme.px(master, height)   # physical pixels
         super().__init__(master, width=width, height=height, bg=theme.INPUT, highlightthickness=0)
         self.w, self.h, self.color = width, height, color
 
@@ -385,7 +390,7 @@ class Sparkline(tk.Canvas):
         top = max(top, 1e-6)
         if limit is not None and limit < top:
             y = h - 2 - (h - 4) * limit / top
-            self.create_line(0, y, w, y, fill=theme.WARN, dash=(3, 3))
+            self.create_line(0, y, w, y, fill=theme.WARN, dash=(3, 3), width=max(1, theme.px(self, 1)))
         if len(values) < 2:
             return
         n = len(values)
@@ -393,7 +398,7 @@ class Sparkline(tk.Canvas):
         for i, v in enumerate(values):
             pts += [w * i / (n - 1), h - 2 - (h - 4) * min(v, top) / top]
         self.create_polygon(*pts, w, h, 0, h, fill=theme.tint(self.color, 0.25, theme.INPUT), outline="")
-        self.create_line(*pts, fill=self.color, width=2)
+        self.create_line(*pts, fill=self.color, width=theme.px(self, 2))
 
 
 class ResourceCard(ctk.CTkFrame):
@@ -492,7 +497,8 @@ class ResourceControl(ctk.CTkFrame):
         ctk.CTkLabel(self, text=tr("Effetto immediato, anche durante l'indicizzazione. Più a sinistra: meno calore e "
                                    "ventole più silenziose, ma l'indicizzazione va più piano."),
                      text_color=theme.TEXT_DIM, font=f.small, anchor="w", justify="left", wraplength=1000).grid(
-            row=3, column=0, columnspan=4, sticky="w", padx=12, pady=(0, 6))
+            row=3, column=0, columnspan=4, sticky="ew", padx=12, pady=(0, 6))
+        theme.autowrap(self.grid_slaves(row=3, column=0)[0])
         # temperature di CPU e GPU con la soglia a cui l'indicizzazione rallenta da sola
         temps = ctk.CTkFrame(self, fg_color="transparent")
         temps.grid(row=4, column=0, columnspan=4, sticky="ew", padx=12, pady=(0, 4))
@@ -512,7 +518,8 @@ class ResourceControl(ctk.CTkFrame):
         ctk.CTkLabel(self, text=tr("Soglie di temperatura: quando CPU o GPU le raggiungono l'indicizzazione rallenta da "
                                    "sola (meno CPU, meno file insieme) e riprende quando si sono raffreddate."),
                      text_color=theme.TEXT_DIM, font=f.small, anchor="w", justify="left", wraplength=1000).grid(
-            row=5, column=0, columnspan=4, sticky="w", padx=12, pady=(0, 10))
+            row=5, column=0, columnspan=4, sticky="ew", padx=12, pady=(0, 10))
+        theme.autowrap(self.grid_slaves(row=5, column=0)[0])
         self.grid_columnconfigure(1, weight=1)
         self._shown = None
         self.sync()
@@ -612,6 +619,7 @@ class MonitorPage(ctk.CTkFrame):
         self.subtitle = ctk.CTkLabel(self, text="", text_color=theme.TEXT_DIM, anchor="w", justify="left",
                                      wraplength=1100)
         self.subtitle.pack(anchor="w", fill="x", pady=(0, 12))
+        theme.autowrap(self.subtitle)
 
         top = ctk.CTkFrame(self, fg_color="transparent")
         top.pack(fill="x")
@@ -741,7 +749,7 @@ class ListEditor(ctk.CTkFrame):
         frame.pack(fill="both", expand=True, padx=8)
         self.lb = tk.Listbox(frame, bg=theme.INPUT, fg=theme.TEXT, selectbackground=theme.SELECT_BG,
                              selectforeground="#ffffff", highlightthickness=0, bd=0, activestyle="none",
-                             selectmode="extended", font=(theme.mono_font(), 10), height=max(4, height // 20))
+                             selectmode="extended", font=(theme.mono_font(), 10), height=4)
         from tkinter import ttk
 
         sb = ttk.Scrollbar(frame, orient="vertical", command=self.lb.yview)
@@ -803,17 +811,20 @@ class ExtTable(ctk.CTkFrame):
         theme.caption(self, title, fonts).pack(anchor="w", padx=10, pady=(10, 4))
         grid = ctk.CTkFrame(self, fg_color="transparent")
         grid.pack(fill="x", padx=6)
+        self.group_grid = grid
         self.group_buttons = {}
-        for i, (name, exts) in enumerate(EXT_GROUPS):
-            b = ctk.CTkButton(grid, text=tr(name), height=24, font=fonts.small,
+        for name, exts in EXT_GROUPS:
+            b = ctk.CTkButton(grid, text="◐ " + tr(name), height=24, font=fonts.small,
                               command=lambda e=exts: self.toggle_group(e))
-            b.grid(row=i // 4, column=i % 4, sticky="ew", padx=2, pady=2)
             self.group_buttons[name] = (b, exts)
-        grid.grid_columnconfigure((0, 1, 2, 3), weight=1)
-        self.area = ctk.CTkScrollableFrame(self, fg_color=theme.INPUT, corner_radius=4, height=230)
-        self.area.pack(fill="both", expand=True, padx=8, pady=(6, 4))
+        self._group_cols = 0
+        self._ext_cols = 0
+        self._cells: list = []          # (section label, [checkbuttons]) in display order
+        self.area = ctk.CTkScrollableFrame(self, fg_color=theme.INPUT, corner_radius=4, height=120)
         row = ctk.CTkFrame(self, fg_color="transparent")
-        row.pack(fill="x", padx=8, pady=(2, 8))
+        # packed before the list: on short screens the list shrinks, not the entry and buttons below it
+        row.pack(side="bottom", fill="x", padx=8, pady=(2, 8))
+        self.area.pack(fill="both", expand=True, padx=8, pady=(6, 4))
         self.entry = ctk.CTkEntry(row, height=28, placeholder_text=tr("altra estensione, es. .xyz"))
         self.entry.pack(side="left", fill="x", expand=True)
         self.entry.bind("<Return>", lambda e: self.add())
@@ -828,6 +839,41 @@ class ExtTable(ctk.CTkFrame):
                 side="left", padx=(4, 0))
         self._extra: list[str] = []
         self.set(values)
+        self.bind("<Configure>", lambda e: self._reflow(), add="+")
+
+    def _reflow(self, force: bool = False):
+        """Columns of group buttons (up to 4) and of extensions (up to COLS) that fit the current width,
+        so no label is cut on narrow windows, large zoom or long translations."""
+        avail = self.winfo_width() - theme.px(self, 40)
+        if avail <= 1:
+            return
+        btns = [b for b, _e in self.group_buttons.values()]
+        bw = max(b.winfo_reqwidth() for b in btns) + theme.px(self, 4)
+        gcols = max(1, min(4, avail // max(1, bw)))
+        if force or gcols != self._group_cols:
+            self._group_cols = gcols
+            for c in range(4):
+                self.group_grid.grid_columnconfigure(c, weight=1 if c < gcols else 0, uniform="g" if c < gcols else "")
+            for i, b in enumerate(btns):
+                b.grid(row=i // gcols, column=i % gcols, sticky="ew", padx=2, pady=2)
+        boxes = [cb for _lbl, cbs in self._cells for cb in cbs]
+        if not boxes:
+            return
+        cw = max(cb.winfo_reqwidth() for cb in boxes) + theme.px(self, 6)
+        cols = max(1, min(self.COLS, (avail - theme.px(self, 20)) // max(1, cw)))
+        if not force and cols == self._ext_cols:
+            return
+        self._ext_cols = cols
+        r = 0
+        for lbl, cbs in self._cells:
+            lbl.grid(row=r, column=0, columnspan=cols, sticky="w", padx=4, pady=(6, 1))
+            r += 1
+            for i, cb in enumerate(cbs):
+                cb.grid(row=r + i // cols, column=i % cols, sticky="w", padx=2)
+            r += (len(cbs) + cols - 1) // cols
+        # same width for every column (as wide as the longest extension), spread over the whole area
+        for c in range(self.COLS):
+            self.area.grid_columnconfigure(c, weight=1 if c < cols else 0, uniform="ext" if c < cols else "")
 
     def _build(self, checked: set[str]):
         for w in self.area.winfo_children():
@@ -838,23 +884,26 @@ class ExtTable(ctk.CTkFrame):
         sections = [(tr(n), [norm_ext(e) for e in exts]) for n, exts in EXT_GROUPS]
         if self._extra:
             sections.append((tr("Altre"), self._extra))
-        r = 0
+        off, on = theme.check_images(self)
+        self._cells = []
         for name, exts in sections:
-            tk.Label(self.area, text=name.upper(), bg=theme.INPUT, fg=theme.TEXT_FAINT,
-                     font=(theme.mono_font(), 8, "bold"), anchor="w").grid(row=r, column=0, columnspan=self.COLS,
-                                                                          sticky="w", padx=4, pady=(6, 1))
-            r += 1
-            unique = list(dict.fromkeys(exts))
-            for i, e in enumerate(unique):
+            lbl = tk.Label(self.area, text=name.upper(), bg=theme.INPUT, fg=theme.TEXT_FAINT,
+                           font=(theme.mono_font(), 8, "bold"), anchor="w")
+            cbs = []
+            for e in dict.fromkeys(exts):
                 var = self.vars.get(e)
                 if var is None:
                     var = self.vars[e] = tk.BooleanVar(value=e in checked)
-                cb = tk.Checkbutton(self.area, text=e, variable=var, command=self._paint_groups,
-                                    bg=theme.INPUT, fg=theme.TEXT, activebackground=theme.INPUT,
-                                    activeforeground=theme.TEXT, selectcolor=theme.PANEL_3, bd=0,
-                                    highlightthickness=0, font=(theme.mono_font(), 9), anchor="w")
-                cb.grid(row=r + i // self.COLS, column=i % self.COLS, sticky="w", padx=2)
-            r += (len(unique) + self.COLS - 1) // self.COLS
+                # drawn box instead of the native indicator, which does not grow with the display zoom
+                cbs.append(tk.Checkbutton(self.area, text=e, variable=var, command=self._paint_groups,
+                                          image=off, selectimage=on, compound="left", indicatoron=False,
+                                          bg=theme.INPUT, fg=theme.TEXT, activebackground=theme.INPUT,
+                                          activeforeground=theme.TEXT, selectcolor=theme.INPUT, bd=0,
+                                          relief="flat", offrelief="flat", overrelief="flat",
+                                          highlightthickness=0, font=(theme.mono_font(), 9), anchor="w"))
+            self._cells.append((lbl, cbs))
+        self._ext_cols = 0
+        self._reflow(force=True)
         self._paint_groups()
 
     def set(self, values: list[str]):
@@ -894,6 +943,19 @@ class ExtTable(ctk.CTkFrame):
                         text=("✓ " if full else "◐ " if part else "+ ") + tr(name))
 
 
+def ext_tables(master, cfg, fonts) -> tuple["ExtTable", "ExtTable"]:
+    """Included and excluded extension tables side by side, always the same width."""
+    pair = ctk.CTkFrame(master, fg_color="transparent")
+    pair.pack(side="left", fill="both", expand=True)
+    pair.grid_columnconfigure((0, 1), weight=1, uniform="ext")
+    pair.grid_rowconfigure(0, weight=1)
+    inc = ExtTable(pair, tr("Estensioni incluse"), cfg.include_ext, fonts, DEFAULT_INCLUDE)
+    inc.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
+    exc = ExtTable(pair, tr("Estensioni escluse"), cfg.exclude_ext, fonts, DEFAULT_EXCLUDE)
+    exc.grid(row=0, column=1, sticky="nsew", padx=(0, 8))
+    return inc, exc
+
+
 class FolderList(ctk.CTkFrame):
     """Cartelle di lavoro da monitorare."""
 
@@ -905,7 +967,7 @@ class FolderList(ctk.CTkFrame):
         frame.pack(fill="both", expand=True, padx=8)
         self.lb = tk.Listbox(frame, bg=theme.INPUT, fg=theme.TEXT, selectbackground=theme.SELECT_BG,
                              selectforeground="#ffffff", highlightthickness=0, bd=0, activestyle="none",
-                             font=(theme.ui_font(), 10), height=4)
+                             font=(theme.ui_font(), 10), height=3)
         self.lb.pack(fill="both", expand=True)
         row = ctk.CTkFrame(self, fg_color="transparent")
         row.pack(fill="x", padx=8, pady=6)
@@ -968,6 +1030,7 @@ class SetupWizard(ctk.CTkToplevel):
                                    "il PC e più veloce quando è inattivo."),
                      text_color=theme.TEXT_DIM, anchor="w", justify="left", wraplength=1040).pack(
             fill="x", padx=20, pady=(4, 12))
+        theme.autowrap(self.pack_slaves()[-1])
 
         body = ctk.CTkFrame(self, fg_color="transparent")
         body.pack(fill="both", expand=True, padx=20)
@@ -982,13 +1045,11 @@ class SetupWizard(ctk.CTkToplevel):
         self.excluded.pack(side="left", fill="both", expand=True)
         tables = ctk.CTkFrame(body, fg_color="transparent")
         tables.pack(fill="both", expand=True)
-        self.inc = ExtTable(tables, tr("Estensioni incluse"), cfg.include_ext, fonts, DEFAULT_INCLUDE)
-        self.inc.pack(side="left", fill="both", expand=True, padx=(0, 8))
-        self.exc = ExtTable(tables, tr("Estensioni escluse"), cfg.exclude_ext, fonts, DEFAULT_EXCLUDE)
-        self.exc.pack(side="left", fill="both", expand=True, padx=(0, 8))
+        # skipped-folders list packed first (right): the extension tables must not squeeze it away
         self.dirs = ListEditor(tables, tr("Cartelle saltate (per nome)"), cfg.exclude_dirs, fonts,
                                DEFAULT_EXCLUDE_DIRS, kind="dir")
-        self.dirs.pack(side="left", fill="y")
+        self.dirs.pack(side="right", fill="y")
+        self.inc, self.exc = ext_tables(tables, cfg, fonts)
 
         bottom = ctk.CTkFrame(self, fg_color="transparent")
         bottom.pack(side="bottom", fill="x", padx=20, pady=14, before=body)   # sempre visibile, anche su schermi bassi

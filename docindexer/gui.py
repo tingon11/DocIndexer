@@ -122,15 +122,24 @@ def make_tree(master, columns: list[tuple[str, str, int]]) -> ttk.Treeview:
     tree._level_col = level_col
     tree._levels = {}
     tree._titles = {key: title for key, title, _w in columns}
+    import tkinter.font as tkfont
+
+    head_font = tkfont.Font(family=theme.mono_font(), size=9, weight="bold")
+
+    def col_width(title: str, width: int) -> int:
+        # Treeview widths are physical pixels: scale the logical width like the rest of the UI, and never
+        # make a column narrower than its (translated) heading plus the sort arrow
+        return max(theme.px(tree, width), head_font.measure(tr(title) + " ▼") + theme.px(tree, 20))
+
     if level_col:
         _k, title, width = columns[0]
         tree.heading("#0", text=tr(title), anchor="w", command=lambda: sort_tree(tree, "level"))
-        tree.column("#0", width=width, minwidth=34, anchor="w", stretch=False)
+        tree.column("#0", width=col_width(title, width), minwidth=theme.px(tree, 34), anchor="w", stretch=False)
     else:
         tree.column("#0", width=0, stretch=False)
     for key, title, width in data:
         tree.heading(key, text=tr(title), command=lambda c=key: sort_tree(tree, c))
-        tree.column(key, width=width, minwidth=34, anchor="w", stretch=False)
+        tree.column(key, width=col_width(title, width), minwidth=theme.px(tree, 34), anchor="w", stretch=False)
     for lvl, color in theme.LEVEL_COLORS.items():      # righe colorate secondo l'importanza
         tree.tag_configure(f"lvl{lvl}", background=theme.tint(color))
     sb = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
@@ -191,7 +200,7 @@ def attach_tree_tooltip(tree: ttk.Treeview, text_for=None):
         tip.wm_overrideredirect(True)
         tip.attributes("-topmost", True)
         tk.Label(tip, text=text, bg=theme.PANEL_3, fg=theme.TEXT, relief="solid", bd=1, padx=6, pady=3,
-                 font=(theme.ui_font(), 10), wraplength=700, justify="left").pack()
+                 font=(theme.ui_font(), 10), wraplength=theme.px(tree, 700), justify="left").pack()
         tip.geometry(f"+{e.x_root + 14}+{e.y_root + 18}")
         state["tip"], state["key"] = tip, key
 
@@ -314,7 +323,7 @@ class PreviewPanel(ctk.CTkFrame):
         bar.pack(fill="x", padx=8, pady=(8, 4))
         self.btn_prev = ctk.CTkButton(bar, text="◀", width=34, command=lambda: self.goto(self.page - 1))
         self.btn_prev.pack(side="left")
-        self.lbl_page = ctk.CTkLabel(bar, text="", width=150)
+        self.lbl_page = ctk.CTkLabel(bar, text="", width=100)
         self.lbl_page.pack(side="left", padx=4)
         self.btn_next = ctk.CTkButton(bar, text="▶", width=34, command=lambda: self.goto(self.page + 1))
         self.btn_next.pack(side="left")
@@ -330,15 +339,16 @@ class PreviewPanel(ctk.CTkFrame):
 
         occ_bar = ctk.CTkFrame(self, fg_color="transparent")
         occ_bar.pack(fill="x", padx=8, pady=(4, 0))
+        # packed first: when the panel is narrow the occurrence label shrinks, not this button
+        ctk.CTkButton(occ_bar, text=tr("Apri originale"), command=self.open_original).pack(side="right")
         self.btn_occ_prev = ctk.CTkButton(occ_bar, text=tr("◀ Occorrenza"), width=110,
                                           command=lambda: self.step_occ(-1))
         self.btn_occ_prev.pack(side="left")
-        self.lbl_occ = ctk.CTkLabel(occ_bar, text="", width=150)
+        self.lbl_occ = ctk.CTkLabel(occ_bar, text="", width=60)
         self.lbl_occ.pack(side="left", padx=6)
         self.btn_occ_next = ctk.CTkButton(occ_bar, text=tr("Occorrenza ▶"), width=110,
                                           command=lambda: self.step_occ(1))
         self.btn_occ_next.pack(side="left")
-        ctk.CTkButton(occ_bar, text=tr("Apri originale"), command=self.open_original).pack(side="right")
         self.notes = AnnotationBar(self, app)
         self.notes.pack(fill="x", padx=8, pady=(6, 0))
         self.occ: list[tuple[int, int, tuple]] = []   # (pagina 0-based, gruppo, riquadro 0..1)
@@ -762,8 +772,9 @@ class PreviewPanel(ctk.CTkFrame):
         if page != self.page:
             return
         x, y, w, h = self._img_box
-        round_rect(self.canvas, x + x0 * w - 5, y + y0 * h - 5, x + x1 * w + 5, y + y1 * h + 5, 8,
-                   outline="#e8195a", width=3, fill="", tags="cur")
+        m = theme.px(self.canvas, 5)               # canvas units are physical pixels
+        round_rect(self.canvas, x + x0 * w - m, y + y0 * h - m, x + x1 * w + m, y + y1 * h + m,
+                   theme.px(self.canvas, 8), outline="#e8195a", width=theme.px(self.canvas, 3), fill="", tags="cur")
 
     def _occ_state(self, text=None):
         if text is not None:
@@ -967,11 +978,14 @@ class ResultsList(tk.Frame):
 
         self.font = tkfont.Font(family=theme.ui_font(), size=10)
         bold = tkfont.Font(family=theme.mono_font(), size=9, weight="bold")
+        # tab stops are physical pixels: scale the logical widths, and keep each column at least as wide
+        # as its translated heading (plus room for the sort arrow)
+        self.widths = [max(theme.px(self, w), bold.measure(tr(t) + " ▼") + theme.px(self, 14)) if w else 0
+                       for t, w in self.COLUMNS]
         stops, x = [], 0
-        for _title, w in self.COLUMNS[:-1]:
+        for w in self.widths[:-1]:
             x += w
             stops.append(x)
-        self.widths = [w for _t, w in self.COLUMNS]
         self.head = tk.Text(self, height=1, wrap="none", bd=0, padx=6, pady=6, font=bold, bg=head_bg, fg=theme.TEXT_DIM,
                             tabs=stops, cursor="arrow", highlightthickness=0)
         self.stops = stops
@@ -1037,9 +1051,9 @@ class ResultsList(tk.Frame):
         self.head.xview(*args)
 
     def _fit(self, value: str, width: int) -> str:
-        if not width or self.font.measure(value) <= width - 12:
+        if not width or self.font.measure(value) <= width - theme.px(self, 12):
             return value
-        while value and self.font.measure(value + "…") > width - 12:
+        while value and self.font.measure(value + "…") > width - theme.px(self, 12):
             value = value[:-1]
         return value + "…"
 
@@ -1115,7 +1129,7 @@ class ResultsList(tk.Frame):
         tip.wm_overrideredirect(True)
         tip.attributes("-topmost", True)
         tk.Label(tip, text=text, bg=theme.PANEL_3, fg=theme.TEXT, relief="solid", bd=1, padx=6, pady=3,
-                 font=(theme.ui_font(), 10), wraplength=700, justify="left").pack()
+                 font=(theme.ui_font(), 10), wraplength=theme.px(self, 700), justify="left").pack()
         tip.geometry(f"+{x}+{y}")
         self._tip = tip
 
@@ -1243,8 +1257,9 @@ class SearchPage(ctk.CTkFrame):
                                 "devono comparire tutte le parole (anche come inizio parola); \"tra virgolette\" = frase. Avanzata: ogni riga usa "
                                 'AND, OR, NOT, "frase esatta", radice*, NEAR(a b, 5).  Ctrl+Invio per cercare.')
                      + " " + tr("Regex: espressione regolare sul testo, con l'editor dei pattern pronti."),
-                     wraplength=1000, justify="left",
-                     text_color=theme.TEXT_DIM).pack(anchor="w", pady=(0, 8))
+                     wraplength=1000, justify="left", anchor="w",
+                     text_color=theme.TEXT_DIM).pack(anchor="w", fill="x", pady=(0, 8))
+        theme.autowrap(body.winfo_children()[-1], 1000)
 
         row = ctk.CTkFrame(body, fg_color="transparent")
         row.pack(fill="x", pady=(0, 10))
@@ -1339,10 +1354,11 @@ class SearchPage(ctk.CTkFrame):
         self.update_saved_badge()
 
         sash_bg = theme.BG
-        hpane = tk.PanedWindow(body, orient="horizontal", sashwidth=6, bd=0, bg=sash_bg)
+        px = lambda n: theme.px(body, n)       # plain tk PanedWindow sizes are physical pixels
+        hpane = tk.PanedWindow(body, orient="horizontal", sashwidth=px(6), bd=0, bg=sash_bg)
         hpane.pack(fill="both", expand=True)
 
-        left = tk.PanedWindow(hpane, orient="vertical", sashwidth=6, bd=0, bg=sash_bg)
+        left = tk.PanedWindow(hpane, orient="vertical", sashwidth=px(6), bd=0, bg=sash_bg)
         # sopra la tabella: un pulsante per ogni estensione presente nei risultati, per filtrarli
         results_box = tk.Frame(left, bg=theme.BG)
         self.ext_bar = tk.Frame(results_box, bg=theme.BG)
@@ -1359,21 +1375,21 @@ class SearchPage(ctk.CTkFrame):
         self._sort = None
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
         self.tree.bind("<<ResultOpen>>", lambda e=None: self.preview.open_original())
-        left.add(results_box, minsize=140, height=300)
+        left.add(results_box, minsize=px(140), height=px(300))
 
         bottom = ctk.CTkFrame(left, fg_color="transparent")
         self.lbl = ctk.CTkLabel(bottom, text="", anchor="w")
         self.lbl.pack(fill="x", pady=(6, 2))
         self.raw = ctk.CTkTextbox(bottom, wrap="word")
         self.raw.pack(fill="both", expand=True)
-        left.add(bottom, minsize=120)
+        left.add(bottom, minsize=px(120))
 
         self.preview = PreviewPanel(hpane, app)
         self.preview.on_occurrence = self.sync_raw
         self.raw_hits: list[str] = []
         self.raw_page = None
-        hpane.add(left, minsize=320, width=560)
-        hpane.add(self.preview, minsize=300)
+        hpane.add(left, minsize=px(320), width=px(560))
+        hpane.add(self.preview, minsize=px(300))
 
     def refresh_folders(self):
         """Cartelle monitorate con spunta (dove cercare); quelle nuove partono selezionate."""
@@ -1934,7 +1950,7 @@ class DocumentsPage(ctk.CTkFrame):
     Con important=True è la scheda "Importanti": solo i file a cui è stato dato un colore, con la nota."""
 
     COLUMNS = [("level", "Imp.", 84), ("name", "Nome", 260), ("folder", "Cartella", 240), ("type", "Tipo", 60),
-               ("status", "Stato", 80), ("lang", "Lingua", 90), ("pages", "Pagine", 60), ("ocr", "OCR", 45),
+               ("status", "Stato", 110), ("lang", "Lingua", 90), ("pages", "Pagine", 60), ("ocr", "OCR", 45),
                ("chars", "Caratteri", 80),
                ("created", "Creato", 128), ("modified", "Modificato", 128), ("hash", "SHA-256", 200)]
     IMPORTANT_COLUMNS = [("level", "Imp.", 84), ("name", "Nome", 260), ("note", "Nota", 300),
@@ -1982,15 +1998,21 @@ class DocumentsPage(ctk.CTkFrame):
                                          dynamic_resizing=False, command=lambda _v: self.refresh())
         self.cf_menu.pack(side="left")
         ctk.CTkButton(bar, text=tr("Aggiorna"), command=self.refresh).pack(side="left", padx=8)
-        ctk.CTkButton(bar, text=tr("Esporta..."), width=110, fg_color=theme.NEUTRAL, hover_color=theme.NEUTRAL_HOVER,
-                      command=self.export).pack(side="right", padx=(8, 0))
-        ctk.CTkButton(bar, text=tr("Rianalizza"), fg_color=theme.NEUTRAL, hover_color=theme.NEUTRAL_HOVER,
+        # actions on the selected documents: on the title row, which has room for them; in a single row
+        # with the filters they were pushed out of the window on narrow or zoomed screens
+        actions = ctk.CTkFrame(head, fg_color="transparent")
+        actions.pack(side="right")
+        ctk.CTkButton(actions, text=tr("Esporta..."), width=110, fg_color=theme.NEUTRAL,
+                      hover_color=theme.NEUTRAL_HOVER, command=self.export).pack(side="right", padx=(8, 0))
+        ctk.CTkButton(actions, text=tr("Rianalizza"), fg_color=theme.NEUTRAL, hover_color=theme.NEUTRAL_HOVER,
                       command=self.reanalyse).pack(side="right")
-        ctk.CTkButton(bar, text=tr("Mostra in Esplora risorse"), fg_color=theme.NEUTRAL,
+        ctk.CTkButton(actions, text=tr("Mostra in Esplora risorse"), fg_color=theme.NEUTRAL,
                       hover_color=theme.NEUTRAL_HOVER, command=self.reveal).pack(side="right", padx=8)
+        self.actions = actions
 
         self.bar = bar
-        hpane = tk.PanedWindow(self, orient="horizontal", sashwidth=6, bd=0, bg=theme.BG)
+        px = lambda n: theme.px(self, n)       # plain tk PanedWindow sizes are physical pixels
+        hpane = tk.PanedWindow(self, orient="horizontal", sashwidth=px(6), bd=0, bg=theme.BG)
         hpane.pack(fill="both", expand=True)
         self.hpane = hpane
         if not important:
@@ -2008,8 +2030,8 @@ class DocumentsPage(ctk.CTkFrame):
         self.count = ctk.CTkLabel(left, text="", anchor="w")
         self.count.pack(fill="x", pady=(6, 0))
         self.preview = PreviewPanel(hpane, app)
-        hpane.add(left, minsize=360, width=720)
-        hpane.add(self.preview, minsize=420)
+        hpane.add(left, minsize=px(360), width=px(720))
+        hpane.add(self.preview, minsize=px(420))
 
     # ------------------------------------------------------- file grandi
     def toggle_big(self):
@@ -2017,11 +2039,13 @@ class DocumentsPage(ctk.CTkFrame):
         showing = bool(self.big_panel.winfo_ismapped())
         if showing:
             self.big_panel.pack_forget()
+            self.actions.pack(side="right")
             self.bar.pack(fill="x", pady=(0, 10))
             self.hpane.pack(fill="both", expand=True)
             self.refresh()
         else:
             self.bar.pack_forget()
+            self.actions.pack_forget()
             self.hpane.pack_forget()
             self.big_panel.pack(fill="both", expand=True)
             self.big_panel.refresh()
@@ -2399,13 +2423,11 @@ class SettingsPage(ctk.CTkFrame):
         tables.pack(fill="both", expand=True)
         from .config import DEFAULT_EXCLUDE, DEFAULT_EXCLUDE_DIRS, DEFAULT_INCLUDE
 
-        self.inc = daemon_ui.ExtTable(tables, tr("Estensioni incluse"), cfg.include_ext, f, DEFAULT_INCLUDE)
-        self.inc.pack(side="left", fill="both", expand=True, padx=(0, 8))
-        self.exc = daemon_ui.ExtTable(tables, tr("Estensioni escluse"), cfg.exclude_ext, f, DEFAULT_EXCLUDE)
-        self.exc.pack(side="left", fill="both", expand=True, padx=(0, 8))
+        # skipped-folders list packed first (right): the extension tables must not squeeze it away
         self.dirs = daemon_ui.ListEditor(tables, tr("Cartelle saltate (per nome)"), cfg.exclude_dirs, f,
                                          DEFAULT_EXCLUDE_DIRS, kind="dir")
-        self.dirs.pack(side="left", fill="y")
+        self.dirs.pack(side="right", fill="y")
+        self.inc, self.exc = daemon_ui.ext_tables(tables, cfg, f)
 
         # ---- configurazione
         form = ctk.CTkScrollableFrame(cfg_tab, fg_color="transparent")
