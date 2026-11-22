@@ -29,6 +29,14 @@ DocIndexer führt einen Index über den Text der Dokumente in den Ordnern, die S
 - Das Haupt-OCR-Modell (lateinisches Alphabet plus Chinesisch und Japanisch) ist bereits enthalten. Weitere Alphabete und die optionalen Werkzeuge (ExifTool für Metadaten, 7-Zip für Archive) laden Sie unter **Einstellungen › Externe Werkzeuge** herunter (siehe [Kapitel 13](#13-einstellungen)).
 - Die Dokumente werden nie verschoben, kopiert oder verändert.
 
+### Portable Nutzung auf einem externen Laufwerk
+
+DocIndexer kann zusammen mit den Ordnern, die es indexiert, auf einem externen Laufwerk oder USB-Stick liegen: Programm, Einstellungen (`config.json`) und Datenbank stehen im selben Ordner und reisen gemeinsam. Es gibt nichts einzuschalten: Der portable Modus ist automatisch.
+
+- Bekommt das Laufwerk auf einem anderen PC einen anderen Buchstaben (zum Beispiel war es **E:** und ist jetzt **F:**), bemerkt DocIndexer das beim Start und passt alle Pfade dieses Laufwerks selbst an: überwachte Ordner, ausgeschlossene Unterordner, gespeicherte Suchen und Index. Es beginnt nicht von vorn: Bereits gelesener Text, Wichtigkeitsfarben und Notizen bleiben erhalten. Im **Protokoll** des Monitors zeigt eine Zeile den alten und den neuen Buchstaben und wie viele Pfade angepasst wurden.
+- Ordner auf anderen Laufwerken (zum Beispiel **C:**) bleiben unverändert. Ist ein überwachtes Laufwerk nicht angeschlossen, bleiben seine Dateien im Index und werden erneut geprüft, sobald es wieder da ist.
+- **Mit Windows starten** und der Rechtsklick-Eintrag **Zu DocIndexer hinzufügen** werden in Windows gespeichert, nicht im Programmordner: Schalten Sie sie auf jedem PC unter **Einstellungen › Konfiguration › Start** wieder ein (siehe [Kapitel 14](#14-symbol-neben-der-uhr-und-start-mit-windows)).
+
 ## 2. Erster Start: Einrichtungsassistent
 
 ### Sprache und Nutzungsbedingungen
@@ -129,6 +137,8 @@ Der Monitor zeigt, wie weit die Indexierung ist.
 
 So funktioniert es: Zuerst werden die Dateien gezählt, dann wird für jede ein Fingerabdruck des Inhalts (SHA-256) berechnet und der Text extrahiert. Eine Datei, die mit einer schon gelesenen identisch ist, wird nicht erneut analysiert; bei einer verschobenen oder umbenannten Datei ändert sich nur der Pfad im Index; eine gelöschte Datei wird entfernt.
 
+Wenn Sie alle überwachten Ordner entfernen, nimmt DocIndexer ihre Dateien aus dem Index und der Monitor wird zurückgesetzt: Diagramm, Zähler und Fortschritt beginnen wieder bei null, bis Sie einen neuen Ordner hinzufügen.
+
 ## 5. Ressourcen für die Indexierung und Temperaturen
 
 Im Monitor legt der Bereich **Ressourcen für die Indexierung** fest, wie viel vom PC DocIndexer nutzen darf.
@@ -199,6 +209,8 @@ Der Bereich **Von DocIndexer genutzte Ressourcen** zeigt CPU und RAM, die das Pr
 
 **Die Vorschau** rechts zeigt die echte Seite des Dokuments mit umrahmten Treffern: Die Pfeile wechseln die Seite, **−**, **Einpassen** und **+** ändern den Zoom (auch mit dem Mausrad), **◀ Treffer** und **Treffer ▶** springen von Fundstelle zu Fundstelle, **Original öffnen** (oder ein Doppelklick auf das Ergebnis) öffnet die Datei mit ihrem Programm. Bei Office-Dokumenten wird die Vorschau mit Office erstellt und kann einige Sekunden dauern.
 
+**Den Ordner eines Treffers öffnen.** Ein Klick auf die Zelle **Ordner** eines Treffers öffnet den Ordner im Datei-Explorer, mit der Datei bereits markiert. Das gilt auch in den Registerkarten **Dokumente** und **Wichtig**.
+
 ### Keine exakten Treffer
 
 Findet eine Suche nichts, versucht DocIndexer es von selbst erneut und toleriert dabei einen Tipp- oder OCR-Fehler pro Wort. Dann erscheint über den Ergebnissen ein roter Hinweis, der einige Male blinkt: **Keine exakten Treffer: Ergebnisse mit 1 Tipp- oder OCR-Fehler**. Prüfen Sie die Ergebnisse: Sie können Wörter enthalten, die dem gesuchten ähneln.
@@ -252,7 +264,9 @@ Ein regulärer Ausdruck (Regex) sucht nach einem *Muster* statt nach einem Wort:
 
 ## 9. Wichtigkeit und Notizen
 
-In der Vorschau, unter dem Dateinamen, kann jedes Dokument eine **Wichtigkeitsfarbe** (hellblau, grün, gelb, orange, rot, vom am wenigsten bis zum wichtigsten; **Keine** entfernt sie) und eine von Ihnen geschriebene **Notiz** erhalten (**Notiz speichern**, **Notiz löschen**). Farbe und Notiz bleiben an der Datei, auch wenn sie verschoben, umbenannt oder geändert wird.
+In der Vorschau, unter dem Dateinamen, kann jedes Dokument eine **Wichtigkeitsfarbe** (hellblau, grün, gelb, orange, rot, vom am wenigsten bis zum wichtigsten; **Keine** entfernt sie) und eine von Ihnen geschriebene **Notiz** erhalten (**Notiz speichern**, **Notiz löschen**).
+
+Farbe und Notiz gehören zum **Inhalt** der Datei (ihrem SHA-256-Fingerabdruck), nicht zu ihrem Pfad. Wenn Sie die Datei verschieben oder umbenennen, auch bei geschlossenem DocIndexer oder auf ein anderes Laufwerk, sind sie wieder da, sobald die Datei erneut geprüft wird. Identische Kopien derselben Datei haben dieselbe Farbe und dieselbe Notiz: Ändern Sie sie bei einer Kopie, ändern sie sich bei allen. Wenn Sie die Datei bearbeiten, bleiben Farbe und Notiz erhalten.
 
 ![Wichtig](07-important.png)
 
@@ -286,6 +300,7 @@ Die Registerkarte **Dokumente** listet alle indizierten Dateien auf.
 - **Alle / Indexiert / In Warteschlange / Übersprungen / Fehler**: filtert nach Status. **Ordner** filtert nach überwachtem Ordner. **Aktualisieren** lädt die Liste neu.
 - Die Spalten zeigen Wichtigkeit, Name, Ordner, Typ, Status, Sprache, Seiten, per OCR gelesene Seiten, Zeichen, Erstellungs- und Änderungsdatum und den SHA-256-Fingerabdruck. Ein Klick auf den Spaltenkopf sortiert; fährt man über eine abgeschnittene Zelle, erscheint der ganze Text.
 - Sie können mehrere Zeilen auswählen (Strg oder Umschalt + Klick, Strg+A). **Im Explorer anzeigen** öffnet den Ordner der Datei, **Neu analysieren** liest die ausgewählten Dateien erneut, **Exportieren...** speichert die Liste. Ein Doppelklick öffnet die Datei.
+- Ein Klick auf die Zelle **Ordner** öffnet den Ordner im Datei-Explorer mit der markierten Datei (auch in der Registerkarte **Wichtig**).
 
 **Große Dateien.** Dateien über der eingestellten Grenze (standardmäßig 200 MB) werden nicht automatisch analysiert: Die Schaltfläche **Große Dateien** wird orange und zeigt, wie viele warten.
 
@@ -372,12 +387,12 @@ Sie sucht schon beim Tippen. Wählen Sie mit den Pfeiltasten ein Ergebnis; **Ein
 | **③** | **Tastenkürzel** | Die Tasten der Schnellsuche (leer = aus). |
 | **④** | **Hintergrundarbeit** | CPU bei genutztem und ruhendem PC, Wartezeit, ausgelastete Programme. |
 | **⑤** | **Dateien größer als (MB) überspringen** | Über dieser Grenze landen Dateien unter **Große Dateien**. |
-| **⑥** | **Größe der Oberfläche (%) — folgt nicht dem Windows-Zoom** | Vergrößert oder verkleinert das ganze Fenster. |
+| **⑥** | **Größe der Oberfläche (%) — 100 = wie der Windows-Zoom** | 100 = wie andere Windows-Apps; mehr vergrößert, weniger verkleinert. |
 
 - **Start**: Start mit Windows (gilt sofort).
 - **Zu DocIndexer hinzufügen**: fügt den Eintrag zum Rechtsklickmenü von Ordnern im Datei-Explorer hinzu; gilt sofort, ohne Speichern (siehe Kapitel 14).
 - **Schnellsuche**: das Tastenkürzel, zum Beispiel `ctrl+alt+d`, `ctrl+shift+f` oder `win+alt+d`; leer = aus. Wird das Kürzel schon von einem anderen Programm verwendet, erscheint ein Hinweis.
-- **Hintergrundarbeit**: maximale CPU während der PC-Nutzung und im Leerlauf, nach wie vielen Minuten der PC als untätig gilt, ab welcher Last anderer Programme DocIndexer wartet, OCR-Threads, alle wie viele Stunden alle Ordner erneut geprüft werden, maximale Dateigröße (größere landen in **Große Dateien**), Größe der Oberfläche (in %, unabhängig vom Windows-Zoom; gilt ab dem nächsten Start). Die ersten Werte ändern sich auch mit dem Regler im Monitor.
+- **Hintergrundarbeit**: maximale CPU während der PC-Nutzung und im Leerlauf, nach wie vielen Minuten der PC als untätig gilt, ab welcher Last anderer Programme DocIndexer wartet, OCR-Threads, alle wie viele Stunden alle Ordner erneut geprüft werden, maximale Dateigröße (größere landen in **Große Dateien**), Größe der Oberfläche (in %, 100 = wie der Windows-Zoom, also so groß wie andere Apps; gilt ab dem nächsten Start). Die ersten Werte ändern sich auch mit dem Regler im Monitor.
 - **Zusatzmodule**: Metadaten mit ExifTool, Text von Dateien in Archiven (7-Zip), SQLite-, dBASE/FoxPro- und Access-Datenbanken. Jedes Modul speichert seine Daten getrennt; in der Suche wählen Sie, worin gesucht wird.
 - **OCR (RapidOCR)**: das Modell. **Automatisch** liest die erste gescannte Seite mit dem lateinischen Modell und probiert bei einem unsicheren Ergebnis die anderen heruntergeladenen Modelle aus; es behält das, das am besten liest. Eine höhere **OCR-Auflösung (DPI)** liest kleine Schrift besser, ist aber langsamer. **OCR testen** macht eine Probe.
 - **SQLite-Datenbanken**: die Datenbankdatei.
@@ -420,6 +435,8 @@ Starten Sie DocIndexer ein zweites Mal, startet keine neue Kopie: Es erscheint d
 
 Ist die Option **Zu DocIndexer hinzufügen** aktiv (Einstellungen › Konfiguration › Start), zeigt ein Rechtsklick auf einen Ordner im Datei-Explorer **Zu DocIndexer hinzufügen**: Der Ordner kommt zu den überwachten Ordnern und die Indexierung beginnt sofort, auch wenn DocIndexer schon geöffnet war. Unter Windows 11 steht der Eintrag unter „Weitere Optionen anzeigen“ (oder Umschalt+F10). Ist der Ordner schon überwacht oder liegt er in einem überwachten Ordner, meldet DocIndexer das und ändert nichts; enthält er bereits überwachte Ordner, tritt er an ihre Stelle. Administratorrechte sind nicht nötig.
 
+**Auf mehreren PCs.** Der Rechtsklick-Eintrag und der Start mit Windows werden im Windows des verwendeten PCs gespeichert, für Ihren Benutzer. Wenn Sie DocIndexer von einem externen Laufwerk nutzen, schalten Sie sie auf jedem PC unter **Einstellungen › Konfiguration › Start** wieder ein. Wechselt das Programm auf demselben PC den Ordner oder Laufwerksbuchstaben, passt sich der Rechtsklick-Eintrag beim nächsten Start selbst an.
+
 ## 15. Häufige Probleme
 
 - **Ein Dokument wird nicht gefunden.** Prüfen Sie im Monitor, ob die Indexierung fertig ist; suchen Sie die Datei in Dokumente nach Namen und sehen Sie sich den Status an (*In Warteschlange*, *Übersprungen*, *Fehler*). Prüfen Sie, ob der Ordner überwacht wird und die Endung zu den eingeschlossenen gehört.
@@ -429,4 +446,6 @@ Ist die Option **Zu DocIndexer hinzufügen** aktiv (Einstellungen › Konfigurat
 - **Die Indexierung ist langsam.** Schieben Sie den Regler nach rechts; im Leerlauf beschleunigt DocIndexer von selbst.
 - **Eine sehr große Datei erscheint nicht.** Sie liegt in **Dokumente › Große Dateien** und wartet auf Ihre Freigabe.
 - **Das Kürzel der Schnellsuche funktioniert nicht.** Ein anderes Programm verwendet es: Wählen Sie unter Einstellungen › Konfiguration ein anderes.
-- **DocIndexer auf einen anderen PC bringen.** Kopieren Sie den ganzen Programmordner oder erstellen Sie eine Sicherung und stellen Sie sie auf dem neuen PC wieder her.
+- **DocIndexer auf einen anderen PC bringen.** Kopieren Sie den ganzen Programmordner oder erstellen Sie eine Sicherung und stellen Sie sie auf dem neuen PC wieder her. Schalten Sie danach bei Bedarf **Mit Windows starten** und **Zu DocIndexer hinzufügen** wieder ein.
+- **Das externe Laufwerk hat einen anderen Buchstaben.** Nichts zu tun: Beim Start passt DocIndexer die Pfade selbst an (siehe [Kapitel 1](#1-bevor-sie-beginnen)).
+- **Die Schrift ist zu klein oder zu groß.** Ändern Sie **Größe der Oberfläche (%)** unter Einstellungen › Konfiguration: 100 ist die Größe anderer Windows-Apps. Gilt ab dem nächsten Start.

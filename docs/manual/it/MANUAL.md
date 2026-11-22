@@ -29,6 +29,14 @@ DocIndexer tiene un indice del testo dei documenti che si trovano nelle cartelle
 - Il modello OCR principale (alfabeto latino più cinese e giapponese) è già incluso. Gli altri alfabeti e gli strumenti facoltativi (ExifTool per i metadati, 7-Zip per gli archivi) si scaricano da **Impostazioni › Strumenti esterni** (vedi [capitolo 13](#13-impostazioni)).
 - I documenti non vengono mai spostati, copiati o modificati.
 
+### Uso portatile su un disco esterno
+
+DocIndexer può stare su un disco esterno o su una chiavetta insieme alle cartelle che indicizza: programma, impostazioni (`config.json`) e database stanno nella stessa cartella e viaggiano insieme. Non c'è nulla da attivare: la modalità portatile è automatica.
+
+- Se su un altro PC il disco prende un'altra lettera (per esempio era **E:** e ora è **F:**), all'avvio DocIndexer se ne accorge e aggiorna da solo tutti i percorsi di quel disco: cartelle monitorate, sottocartelle escluse, ricerche salvate e indice. Non riparte da zero: il testo già letto, i colori di importanza e le note restano. Nel **Registro** del Monitor una riga indica la vecchia e la nuova lettera e quanti percorsi sono stati aggiornati.
+- Le cartelle che stanno su altri dischi (per esempio **C:**) non vengono toccate. Se un disco monitorato non è collegato, i suoi file restano nell'indice e vengono ricontrollati quando torna disponibile.
+- **Avvia con Windows** e la voce **Aggiungi a DocIndexer** del tasto destro sono registrate in Windows, non nella cartella del programma: su ogni PC vanno riattivate in **Impostazioni › Configurazione › Avvio** (vedi il [capitolo 14](#14-icona-vicino-allorologio-e-avvio-con-windows)).
+
 ## 2. Primo avvio: configurazione guidata
 
 ### Lingua e termini d'uso
@@ -129,6 +137,8 @@ Il Monitor mostra a che punto è l'indicizzazione.
 
 Come lavora: prima conta i file, poi calcola per ognuno un'impronta del contenuto (SHA-256) ed estrae il testo. Un file identico a uno già letto non viene rianalizzato; un file spostato o rinominato cambia solo percorso nell'indice; un file cancellato viene tolto.
 
+Se togli tutte le cartelle monitorate, DocIndexer toglie dall'indice i loro file e il Monitor si azzera: grafico, contatori e avanzamento ripartono da zero finché non aggiungi una nuova cartella.
+
 ## 5. Risorse per l'indicizzazione e temperature
 
 Nel Monitor, il riquadro **Risorse per l'indicizzazione** decide quanta parte del PC può usare DocIndexer.
@@ -199,6 +209,8 @@ Il riquadro **Risorse usate da DocIndexer** mostra CPU e RAM usate dal programma
 
 **L'anteprima** a destra mostra la pagina vera del documento con le occorrenze riquadrate: le frecce cambiano pagina, **−**, **Adatta** e **+** cambiano lo zoom (anche con la rotellina), **◀ Occorrenza** e **Occorrenza ▶** saltano da un risultato all'altro, **Apri originale** (o doppio clic sul risultato) apre il file con il suo programma. Per i documenti Office l'anteprima viene preparata con Office e può richiedere qualche secondo.
 
+**Aprire la cartella di un risultato.** Un clic sulla cella **Cartella** di un risultato apre la cartella in Esplora file con il file già selezionato. Lo stesso vale nelle schede **Documenti** e **Importanti**.
+
 ### Nessun risultato esatto
 
 Se una ricerca non trova nulla, DocIndexer riprova da solo tollerando un errore di battitura o di OCR per parola. In quel caso sopra i risultati compare un avviso rosso che lampeggia qualche volta: **Nessun risultato esatto: mostrati quelli con 1 errore di battitura o di OCR**. Controlla i risultati: possono contenere parole simili a quella cercata.
@@ -252,7 +264,9 @@ Un'espressione regolare (regex) cerca uno *schema* invece di una parola: per ese
 
 ## 9. Importanza e note
 
-Nell'anteprima, sotto il nome del file, ogni documento può avere un **colore di importanza** (azzurro, verde, giallo, arancio, rosso, dal meno al più importante; **Nessuna** lo toglie) e una **nota** scritta da te (**Salva nota**, **Cancella nota**). Colore e nota restano legati al file anche se viene spostato, rinominato o modificato.
+Nell'anteprima, sotto il nome del file, ogni documento può avere un **colore di importanza** (azzurro, verde, giallo, arancio, rosso, dal meno al più importante; **Nessuna** lo toglie) e una **nota** scritta da te (**Salva nota**, **Cancella nota**).
+
+Colore e nota appartengono al **contenuto** del file (la sua impronta SHA-256), non al percorso. Se sposti o rinomini il file, anche con DocIndexer chiuso o su un altro disco, li ritrovi appena il file viene ricontrollato. Le copie identiche dello stesso file hanno lo stesso colore e la stessa nota: se li cambi su una copia, cambiano su tutte. Se modifichi il file, colore e nota restano.
 
 ![Importanti](07-important.png)
 
@@ -286,6 +300,7 @@ La scheda **Documenti** elenca tutti i file indicizzati.
 - **Tutti / Indicizzati / In coda / Saltati / Errori**: filtra per stato. **Cartella** filtra per cartella monitorata. **Aggiorna** ricarica l'elenco.
 - Le colonne mostrano importanza, nome, cartella, tipo, stato, lingua, pagine, pagine lette con l'OCR, caratteri, data di creazione e di modifica e impronta SHA-256. Un clic sull'intestazione ordina; passando sopra una cella troncata compare il testo intero.
 - Si possono selezionare più righe (Ctrl o Maiusc + clic, Ctrl+A). **Mostra in Esplora risorse** apre la cartella del file, **Rianalizza** rilegge i file selezionati, **Esporta...** salva l'elenco. Il doppio clic apre il file.
+- Un clic sulla cella **Cartella** apre la cartella in Esplora file con il file selezionato (anche nella scheda **Importanti**).
 
 **File grandi.** I file più grandi del limite impostato (200 MB di base) non vengono analizzati da soli: il pulsante **File grandi** diventa arancione e mostra quanti sono in attesa.
 
@@ -372,12 +387,12 @@ Le modifiche valgono solo dopo **Salva**. **Annulla modifiche** torna alle impos
 | **③** | **Scorciatoia da tastiera** | I tasti della ricerca rapida (vuoto = disattivata). |
 | **④** | **Lavoro in background** | CPU con il PC in uso e inattivo, attesa, programmi impegnati. |
 | **⑤** | **Salta i file più grandi di (MB)** | Oltre questo limite i file vanno in **File grandi**. |
-| **⑥** | **Dimensione interfaccia (%) — non segue lo zoom di Windows** | Ingrandisce o rimpicciolisce tutta la finestra. |
+| **⑥** | **Dimensione interfaccia (%) — 100 = come lo zoom di Windows** | 100 = come le altre app di Windows; di più ingrandisce, di meno rimpicciolisce. |
 
 - **Avvio**: avvio con Windows (vale subito).
 - **Aggiungi a DocIndexer**: aggiunge la voce al menu del tasto destro delle cartelle in Esplora file; vale subito, senza Salva (vedi il capitolo 14).
 - **Ricerca rapida**: la scorciatoia da tastiera, per esempio `ctrl+alt+d`, `ctrl+shift+f` o `win+alt+d`; vuota = disattivata. Se la scorciatoia è già usata da un altro programma compare un avviso.
-- **Lavoro in background**: CPU massima mentre usi il PC e con il PC inattivo, dopo quanti minuti il PC è considerato inattivo, oltre quale carico degli altri programmi DocIndexer aspetta, thread OCR, ogni quante ore ricontrollare tutte le cartelle, dimensione massima dei file (oltre va in **File grandi**), dimensione dell'interfaccia (in %, indipendente dallo zoom di Windows; vale dal prossimo avvio). I primi valori cambiano anche con lo slider del Monitor.
+- **Lavoro in background**: CPU massima mentre usi il PC e con il PC inattivo, dopo quanti minuti il PC è considerato inattivo, oltre quale carico degli altri programmi DocIndexer aspetta, thread OCR, ogni quante ore ricontrollare tutte le cartelle, dimensione massima dei file (oltre va in **File grandi**), dimensione dell'interfaccia (in %, 100 = come lo zoom di Windows, cioè la stessa dimensione delle altre app; vale dal prossimo avvio). I primi valori cambiano anche con lo slider del Monitor.
 - **Moduli aggiuntivi**: metadati con ExifTool, testo dei file dentro gli archivi (7-Zip), database SQLite, dBASE/FoxPro e Access. Ogni modulo salva i suoi dati a parte; in Ricerca scegli in quali cercare.
 - **OCR (RapidOCR)**: il modello. **Automatico** legge la prima pagina scansionata con il modello latino e, se il risultato è incerto, prova gli altri modelli scaricati scegliendo quello che legge meglio. La **risoluzione OCR (DPI)** più alta legge meglio i caratteri piccoli ma è più lenta. **Verifica OCR** fa una prova.
 - **Database SQLite**: il file del database.
@@ -420,6 +435,8 @@ Se avvii DocIndexer una seconda volta non parte una nuova copia: si mostra la fi
 
 Con l'opzione **Aggiungi a DocIndexer** attiva (Impostazioni › Configurazione › Avvio), in Esplora file il clic destro su una cartella mostra **Aggiungi a DocIndexer**: la cartella entra tra le cartelle monitorate e l'indicizzazione parte subito, anche se DocIndexer era già aperto. Su Windows 11 la voce è in «Mostra altre opzioni» (o Maiusc+F10). Se la cartella è già monitorata, o è dentro una cartella monitorata, DocIndexer lo dice e non cambia nulla; se contiene cartelle già monitorate, prende il loro posto. Non servono permessi di amministratore.
 
+**Su più PC.** La voce del tasto destro e l'avvio con Windows vengono registrati nel Windows del PC in uso, per il tuo utente. Se usi DocIndexer da un disco esterno, riattivali su ogni PC in **Impostazioni › Configurazione › Avvio**. Se sullo stesso PC il programma cambia cartella o lettera di disco, la voce del tasto destro si aggiorna da sola al successivo avvio.
+
 ## 15. Problemi frequenti
 
 - **Un documento non si trova.** Controlla nel Monitor che l'indicizzazione sia finita; in Documenti cerca il file per nome e guarda lo stato (*In coda*, *Saltati*, *Errori*). Verifica che la cartella sia monitorata e che l'estensione sia tra le incluse.
@@ -429,4 +446,6 @@ Con l'opzione **Aggiungi a DocIndexer** attiva (Impostazioni › Configurazione 
 - **L'indicizzazione è lenta.** Sposta lo slider verso destra; ricorda che a PC fermo DocIndexer accelera da solo.
 - **Un file molto grande non compare.** È in **Documenti › File grandi**, in attesa della tua approvazione.
 - **La scorciatoia della ricerca rapida non funziona.** È usata da un altro programma: scegline un'altra in Impostazioni › Configurazione.
-- **Spostare DocIndexer su un altro PC.** Copia l'intera cartella del programma, oppure crea un backup e ripristinalo sul nuovo PC.
+- **Spostare DocIndexer su un altro PC.** Copia l'intera cartella del programma, oppure crea un backup e ripristinalo sul nuovo PC. Poi, se ti servono, riattiva **Avvia con Windows** e **Aggiungi a DocIndexer**.
+- **Il disco esterno ha un'altra lettera.** Non devi fare nulla: all'avvio DocIndexer aggiorna da solo i percorsi (vedi il [capitolo 1](#1-prima-di-iniziare)).
+- **Il testo è troppo piccolo o troppo grande.** Cambia **Dimensione interfaccia (%)** in Impostazioni › Configurazione: 100 è la dimensione delle altre app di Windows. Vale dal prossimo avvio.

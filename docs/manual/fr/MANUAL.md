@@ -29,6 +29,14 @@ DocIndexer tient un index du texte des documents qui se trouvent dans les dossie
 - Le modèle OCR principal (alphabet latin plus chinois et japonais) est déjà inclus. Les autres alphabets et les outils facultatifs (ExifTool pour les métadonnées, 7-Zip pour les archives) se téléchargent depuis **Paramètres › Outils externes** (voir le [chapitre 13](#13-paramètres)).
 - Les documents ne sont jamais déplacés, copiés ni modifiés.
 
+### Utilisation portable sur un disque externe
+
+DocIndexer peut se trouver sur un disque externe ou une clé USB avec les dossiers qu'il indexe : programme, paramètres (`config.json`) et base de données sont dans le même dossier et voyagent ensemble. Rien à activer : le mode portable est automatique.
+
+- Si, sur un autre PC, le disque reçoit une autre lettre (par exemple il était **E:** et il est maintenant **F:**), DocIndexer s'en aperçoit au démarrage et met à jour tout seul tous les chemins de ce disque : dossiers surveillés, sous-dossiers exclus, recherches enregistrées et index. Il ne repart pas de zéro : le texte déjà lu, les couleurs d'importance et les notes sont conservés. Dans le **Journal** du Moniteur, une ligne indique l'ancienne et la nouvelle lettre et combien de chemins ont été mis à jour.
+- Les dossiers situés sur d'autres disques (par exemple **C:**) ne sont pas touchés. Si un disque surveillé n'est pas branché, ses fichiers restent dans l'index et sont revérifiés quand il revient.
+- **Démarrer avec Windows** et l'entrée **Ajouter à DocIndexer** du clic droit sont enregistrés dans Windows, pas dans le dossier du programme : sur chaque PC, réactivez-les dans **Paramètres › Configuration › Démarrage** (voir le [chapitre 14](#14-icône-près-de-lhorloge-et-démarrage-avec-windows)).
+
 ## 2. Premier démarrage : configuration guidée
 
 ### Langue et conditions d'utilisation
@@ -129,6 +137,8 @@ Le Moniteur montre où en est l'indexation.
 
 Fonctionnement : il compte d'abord les fichiers, puis calcule pour chacun une empreinte du contenu (SHA-256) et extrait le texte. Un fichier identique à un fichier déjà lu n'est pas réanalysé ; un fichier déplacé ou renommé change seulement de chemin dans l'index ; un fichier supprimé en est retiré.
 
+Si vous retirez tous les dossiers surveillés, DocIndexer retire leurs fichiers de l'index et le Moniteur se remet à zéro : graphique, compteurs et progression repartent de zéro jusqu'à ce que vous ajoutiez un nouveau dossier.
+
 ## 5. Ressources pour l'indexation et températures
 
 Dans le Moniteur, le cadre **Ressources pour l'indexation** décide quelle part du PC DocIndexer peut utiliser.
@@ -199,6 +209,8 @@ Le cadre **Ressources utilisées par DocIndexer** montre le CPU et la RAM utilis
 
 **L'aperçu** à droite montre la vraie page du document avec les occurrences encadrées : les flèches changent de page, **−**, **Ajuster** et **+** changent le zoom (la molette aussi), **◀ Occurrence** et **Occurrence ▶** passent d'un résultat à l'autre, **Ouvrir l'original** (ou un double clic sur le résultat) ouvre le fichier avec son programme. Pour les documents Office, l'aperçu est préparé avec Office et peut demander quelques secondes.
 
+**Ouvrir le dossier d'un résultat.** Un clic sur la cellule **Dossier** d'un résultat ouvre le dossier dans l'Explorateur de fichiers avec le fichier déjà sélectionné. Cela fonctionne aussi dans les onglets **Documents** et **Importants**.
+
 ### Aucun résultat exact
 
 Si une recherche ne trouve rien, DocIndexer réessaie seul en tolérant une faute de frappe ou d'OCR par mot. Un avis rouge apparaît alors au-dessus des résultats et clignote quelques fois : **Aucun résultat exact : résultats avec 1 faute de frappe ou d'OCR**. Vérifiez les résultats : ils peuvent contenir des mots proches de celui cherché.
@@ -252,7 +264,9 @@ Une expression régulière (regex) cherche un *motif* au lieu d'un mot : par exe
 
 ## 9. Importance et notes
 
-Dans l'aperçu, sous le nom du fichier, chaque document peut avoir une **couleur d'importance** (bleu clair, vert, jaune, orange, rouge, du moins au plus important ; **Aucune** la retire) et une **note** écrite par vous (**Enregistrer la note**, **Supprimer la note**). La couleur et la note restent liées au fichier même s'il est déplacé, renommé ou modifié.
+Dans l'aperçu, sous le nom du fichier, chaque document peut avoir une **couleur d'importance** (bleu clair, vert, jaune, orange, rouge, du moins au plus important ; **Aucune** la retire) et une **note** écrite par vous (**Enregistrer la note**, **Supprimer la note**).
+
+La couleur et la note appartiennent au **contenu** du fichier (son empreinte SHA-256), pas à son chemin. Si vous déplacez ou renommez le fichier, même DocIndexer fermé ou vers un autre disque, vous les retrouvez dès que le fichier est revérifié. Les copies identiques d'un même fichier ont la même couleur et la même note : si vous les changez sur une copie, elles changent sur toutes. Si vous modifiez le fichier, la couleur et la note restent.
 
 ![Importants](07-important.png)
 
@@ -286,6 +300,7 @@ L'onglet **Documents** liste tous les fichiers indexés.
 - **Tous / Indexés / En attente / Ignorés / Erreurs** : filtre par état. **Dossier** filtre par dossier surveillé. **Actualiser** recharge la liste.
 - Les colonnes montrent l'importance, le nom, le dossier, le type, l'état, la langue, les pages, les pages lues par OCR, les caractères, les dates de création et de modification et l'empreinte SHA-256. Un clic sur l'en-tête trie ; en survolant une cellule tronquée, le texte complet apparaît.
 - Vous pouvez sélectionner plusieurs lignes (Ctrl ou Maj + clic, Ctrl+A). **Afficher dans l'Explorateur** ouvre le dossier du fichier, **Réanalyser** relit les fichiers sélectionnés, **Exporter...** enregistre la liste. Un double clic ouvre le fichier.
+- Un clic sur la cellule **Dossier** ouvre le dossier dans l'Explorateur de fichiers avec le fichier sélectionné (aussi dans l'onglet **Importants**).
 
 **Gros fichiers.** Les fichiers plus grands que la limite fixée (200 Mo par défaut) ne sont pas analysés automatiquement : le bouton **Gros fichiers** devient orange et indique combien sont en attente.
 
@@ -372,12 +387,12 @@ Les modifications ne s'appliquent qu'après **Enregistrer**. **Annuler les modif
 | **③** | **Raccourci clavier** | Les touches de la recherche rapide (vide = désactivée). |
 | **④** | **Travail en arrière-plan** | CPU avec le PC utilisé et inactif, attente, programmes occupés. |
 | **⑤** | **Ignorer les fichiers de plus de (Mo)** | Au-delà de cette limite les fichiers vont dans **Gros fichiers**. |
-| **⑥** | **Taille de l'interface (%) — ne suit pas le zoom de Windows** | Agrandit ou réduit toute la fenêtre. |
+| **⑥** | **Taille de l'interface (%) — 100 = comme le zoom de Windows** | 100 = comme les autres applications Windows ; plus grand agrandit, plus petit réduit. |
 
 - **Démarrage** : démarrage avec Windows (s'applique immédiatement).
 - **Ajouter à DocIndexer** : ajoute l'élément au menu du clic droit des dossiers dans l'Explorateur de fichiers ; s'applique tout de suite, sans Enregistrer (voir le chapitre 14).
 - **Recherche rapide** : le raccourci clavier, par exemple `ctrl+alt+d`, `ctrl+shift+f` ou `win+alt+d` ; vide = désactivée. Si le raccourci est déjà utilisé par un autre programme, un avertissement s'affiche.
-- **Travail en arrière-plan** : CPU maximal pendant que vous utilisez le PC et quand il est inactif, après combien de minutes le PC est considéré comme inactif, au-delà de quelle charge des autres programmes DocIndexer attend, threads OCR, toutes les combien d'heures revérifier tous les dossiers, taille maximale des fichiers (au-delà ils vont dans **Gros fichiers**), taille de l'interface (en %, indépendante du zoom de Windows ; s'applique au prochain démarrage). Les premières valeurs changent aussi avec le curseur du Moniteur.
+- **Travail en arrière-plan** : CPU maximal pendant que vous utilisez le PC et quand il est inactif, après combien de minutes le PC est considéré comme inactif, au-delà de quelle charge des autres programmes DocIndexer attend, threads OCR, toutes les combien d'heures revérifier tous les dossiers, taille maximale des fichiers (au-delà ils vont dans **Gros fichiers**), taille de l'interface (en %, 100 = comme le zoom de Windows, c'est-à-dire la même taille que les autres applications ; s'applique au prochain démarrage). Les premières valeurs changent aussi avec le curseur du Moniteur.
 - **Modules complémentaires** : métadonnées avec ExifTool, texte des fichiers dans les archives (7-Zip), bases de données SQLite, dBASE/FoxPro et Access. Chaque module garde ses données à part ; dans Recherche, vous choisissez où chercher.
 - **OCR (RapidOCR)** : le modèle. **Automatique** lit la première page numérisée avec le modèle latin et, si le résultat est incertain, essaie les autres modèles téléchargés et garde celui qui lit le mieux. Une **résolution OCR (DPI)** plus élevée lit mieux les petits caractères mais est plus lente. **Tester l'OCR** fait un essai.
 - **Bases de données SQLite** : le fichier de la base de données.
@@ -420,6 +435,8 @@ Si vous lancez DocIndexer une deuxième fois, aucune nouvelle copie ne démarre 
 
 Avec l'option **Ajouter à DocIndexer** activée (Paramètres › Configuration › Démarrage), un clic droit sur un dossier dans l'Explorateur de fichiers affiche **Ajouter à DocIndexer** : le dossier rejoint les dossiers surveillés et l'indexation démarre aussitôt, même si DocIndexer était déjà ouvert. Sous Windows 11, l'élément se trouve dans « Afficher d'autres options » (ou Maj+F10). Si le dossier est déjà surveillé, ou se trouve dans un dossier surveillé, DocIndexer le signale et ne change rien ; s'il contient des dossiers déjà surveillés, il prend leur place. Aucun droit d'administrateur n'est nécessaire.
 
+**Sur plusieurs PC.** L'entrée du clic droit et le démarrage avec Windows sont enregistrés dans le Windows du PC utilisé, pour votre utilisateur. Si vous utilisez DocIndexer depuis un disque externe, réactivez-les sur chaque PC dans **Paramètres › Configuration › Démarrage**. Si, sur le même PC, le programme change de dossier ou de lettre de disque, l'entrée du clic droit se met à jour toute seule au démarrage suivant.
+
 ## 15. Problèmes fréquents
 
 - **Un document est introuvable.** Vérifiez dans le Moniteur que l'indexation est terminée ; dans Documents, cherchez le fichier par son nom et regardez son état (*En attente*, *Ignorés*, *Erreurs*). Vérifiez que le dossier est surveillé et que l'extension fait partie des incluses.
@@ -429,4 +446,6 @@ Avec l'option **Ajouter à DocIndexer** activée (Paramètres › Configuration 
 - **L'indexation est lente.** Déplacez le curseur vers la droite ; quand le PC est inactif, DocIndexer accélère tout seul.
 - **Un très gros fichier n'apparaît pas.** Il est dans **Documents › Gros fichiers**, en attente de votre accord.
 - **Le raccourci de la recherche rapide ne marche pas.** Un autre programme l'utilise : choisissez-en un autre dans Paramètres › Configuration.
-- **Déplacer DocIndexer sur un autre PC.** Copiez tout le dossier du programme, ou créez une sauvegarde et restaurez-la sur le nouveau PC.
+- **Déplacer DocIndexer sur un autre PC.** Copiez tout le dossier du programme, ou créez une sauvegarde et restaurez-la sur le nouveau PC. Ensuite, si vous en avez besoin, réactivez **Démarrer avec Windows** et **Ajouter à DocIndexer**.
+- **Le disque externe a une autre lettre.** Rien à faire : au démarrage, DocIndexer met à jour les chemins tout seul (voir le [chapitre 1](#1-avant-de-commencer)).
+- **Le texte est trop petit ou trop grand.** Changez **Taille de l'interface (%)** dans Paramètres › Configuration : 100 est la taille des autres applications Windows. Cela s'applique au prochain démarrage.

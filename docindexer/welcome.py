@@ -57,11 +57,8 @@ class WelcomeWindow(ctk.CTkToplevel):
 
     # ---------------------------------------------------------------- finestra
     def _place(self) -> None:
-        self.update_idletasks()
-        # CustomTkinter moltiplica per lo scaling sia le dimensioni sia la posizione di geometry()
-        s = theme.window_scaling(self)
-        sw, sh = self.winfo_screenwidth() / s, self.winfo_screenheight() / s
-        self.geometry(f"{WIDTH}x{HEIGHT}+{max(0, int(sw - WIDTH) // 2)}+{max(0, int(sh - HEIGHT) // 3)}")
+        # logical units, centered, never larger than the screen at any zoom
+        theme.place_window(self, WIDTH, HEIGHT)
 
     def _raise(self) -> None:
         """Davanti a tutto e modale: chi apre il programma deve rispondere prima di proseguire."""

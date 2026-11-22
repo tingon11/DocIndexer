@@ -36,7 +36,9 @@ class DuplicatesPage(ctk.CTkFrame):
         ctk.CTkLabel(self, text=tr("Identici: lo stesso file (stesso contenuto) in più cartelle. Simili: documenti con "
                                    "testo quasi uguale, per esempio versioni corrette, lo stesso testo in PDF e in Word "
                                    "o una scansione rifatta."),
-                     text_color=theme.TEXT_DIM, wraplength=1100, justify="left").pack(anchor="w", pady=(0, 10))
+                     text_color=theme.TEXT_DIM, wraplength=1100, justify="left", anchor="w").pack(
+            anchor="w", fill="x", pady=(0, 10))
+        theme.autowrap(self.pack_slaves()[-1], 1100)
         bar = ctk.CTkFrame(self, fg_color="transparent")
         bar.pack(fill="x", pady=(0, 8))
         self.mode = tk.StringVar(value=tr("Identici"))
@@ -63,10 +65,11 @@ class DuplicatesPage(ctk.CTkFrame):
                 ("sim", tr("Somiglianza"), 100))
         self.tree = ttk.Treeview(frame, columns=[c[0] for c in cols], show="tree headings", selectmode="browse")
         self.tree.heading("#0", text=tr("Nome"), anchor="w")
-        self.tree.column("#0", width=380, anchor="w")
+        # Treeview widths are physical pixels: scale the logical widths like the rest of the UI
+        self.tree.column("#0", width=theme.px(self.tree, 380), anchor="w")
         for key, title, width in cols:
             self.tree.heading(key, text=title, anchor="w")
-            self.tree.column(key, width=width, anchor="w", stretch=key == "folder")
+            self.tree.column(key, width=theme.px(self.tree, width), anchor="w", stretch=key == "folder")
         sb = ctk.CTkScrollbar(frame, command=self.tree.yview)
         self.tree.configure(yscrollcommand=sb.set)
         self.tree.pack(side="left", fill="both", expand=True)

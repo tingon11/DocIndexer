@@ -41,10 +41,16 @@ def parse_args():
     ap.add_argument("--demo", default=str(default_demo), help="cartella di prova (viene ricreata)")
     ap.add_argument("--out", default=str(ROOT / "docs" / "manual"), help="cartella del manuale")
     ap.add_argument("--keep", action="store_true", help="non cancellare la cartella di prova alla fine")
+    ap.add_argument("--only", default="", help="solo questi screenshot delle Impostazioni, separati da virgola "
+                                              "(es. 13-settings-config); gli altri file restano come sono")
     return ap.parse_args()
 
 
 ARGS = parse_args()
+SETTINGS_SHOTS = {"12-settings-folders", "13-settings-config", "14-settings-tools", "15-settings-backup"}
+ONLY = {n.strip() for n in ARGS.only.split(",") if n.strip()}
+if ONLY - SETTINGS_SHOTS:
+    sys.exit(f"--only vale solo per: {', '.join(sorted(SETTINGS_SHOTS))}")
 DEMO = Path(ARGS.demo)
 HOME = DEMO / "profile"          # config.json, data\, cache\ del profilo di prova
 DOCS = DEMO / "Documents"
@@ -374,6 +380,8 @@ class Shots:
                 self.failed.append(code)
 
     def shot(self, win, name, widgets=None):
+        if ONLY and name not in ONLY:
+            return
         try:
             win.update_idletasks()
             marks = CALLOUTS[name](self, win) if name in CALLOUTS else None
@@ -392,6 +400,9 @@ class Shots:
         yield 1.5
         cname, _ct, iname, _it, word_c, word_i, note = SAMPLES[code]   # relazione, verbale
         self._annotate(code, note)
+        if ONLY:                          # --only: solo le schede delle Impostazioni richieste
+            yield from self.settings(app)
+            return
 
         # --- prima apertura: scelta della lingua e termini d'uso (finte: nessuna risposta, nessun salvataggio)
         for name, need_language in (("18-welcome-language", True), ("19-terms", False)):
@@ -513,10 +524,18 @@ class Shots:
         self.shot(app, "11-similar")
 
         # --- Impostazioni
+        yield from self.settings(app)
+
+        # --- ricerca rapida
+        yield from self.rest(app, code, word_i)
+
+    def settings(self, app):
         app.show("settings")
         st = app.pages["settings"]
         for name, tab in (("12-settings-folders", "Cartelle ed estensioni"), ("13-settings-config", "Configurazione"),
                           ("14-settings-tools", "Strumenti esterni"), ("15-settings-backup", "Backup")):
+            if ONLY and name not in ONLY:
+                continue
             st.tabs.set(tr(tab))
             yield 2.5 if tab == "Strumenti esterni" else 1
             old = None
@@ -533,7 +552,7 @@ class Shots:
                 yield 0.5
         app.show("monitor")
 
-        # --- ricerca rapida
+    def rest(self, app, code, word_i):
         qs = quick.QuickSearch.toggle(app)
         yield 1
         qs = quick.QuickSearch._instance

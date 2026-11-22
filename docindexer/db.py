@@ -127,6 +127,15 @@ CREATE TABLE IF NOT EXISTS db_items (              -- contenuto dei database (SQ
 CREATE INDEX IF NOT EXISTS ix_db_sha ON db_items(sha256);
 CREATE VIRTUAL TABLE IF NOT EXISTS db_fts USING fts5(search_text, content='', contentless_delete=1, tokenize='unicode61 remove_diacritics 2');
 
+-- importance and note by content hash: they follow the file when it is moved or renamed, even if the
+-- move is seen as delete + create (app closed, another disk, missed watcher event)
+CREATE TABLE IF NOT EXISTS annotations (
+    sha256      TEXT    PRIMARY KEY,
+    level       INTEGER NOT NULL DEFAULT 0,
+    note        TEXT,
+    updated_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
 -- vocabolario dell'indice (per la ricerca fuzzy)
 CREATE VIRTUAL TABLE IF NOT EXISTS contents_vocab USING fts5vocab(contents_fts, 'row');
 """
@@ -212,6 +221,13 @@ class Database:
         if not any(r[1] == "big" for r in self.conn.execute("PRAGMA table_info(files)")):
             with self.transaction() as c:      # db creato prima della sezione "File grandi"
                 c.execute("ALTER TABLE files ADD COLUMN big INTEGER NOT NULL DEFAULT 0")
+        # one-time migration: copy importance/notes already set on paths into the hash-keyed table
+        if not self.conn.execute("SELECT 1 FROM meta WHERE key='annotations_v'").fetchone():
+            with self.transaction() as c:
+                c.execute("INSERT OR IGNORE INTO annotations (sha256, level, note)"
+                          " SELECT sha256, MAX(level), MAX(note) FROM paths"
+                          " WHERE sha256 IS NOT NULL AND (level > 0 OR note IS NOT NULL) GROUP BY sha256")
+                c.execute("INSERT OR REPLACE INTO meta (key, value) VALUES ('annotations_v', '1')")
         # file rimasti "processing" per un crash tornano in coda
         self.conn.execute("UPDATE files SET status='pending' WHERE status='processing'")
         # impronte dei quasi-duplicati calcolate in un modo vecchio: si ricalcolano quando servono
@@ -335,7 +351,22 @@ class Database:
                             " VALUES (?,?,?,?,?,?)",
                             (sha256, size, doc_type, mime, "skipped" if skip_reason else "pending", skip_reason))
             c.execute("UPDATE paths SET sha256=?, error=NULL WHERE id=?", (sha256, path_id))
+            self._link_annotation(c, path_id, sha256)
             return cur.rowcount > 0
+
+    @staticmethod
+    def _link_annotation(c, path_id: int, sha256: str) -> None:
+        """A path just got its hash. If that content already has an importance/note (file moved,
+        renamed or copied), the path takes it; otherwise whatever the path already carries (file
+        modified in place: new hash, same path) is saved under the new hash."""
+        a = c.execute("SELECT level, note FROM annotations WHERE sha256=?", (sha256,)).fetchone()
+        if a is not None:
+            c.execute("UPDATE paths SET level=?, note=? WHERE id=?", (a["level"], a["note"], path_id))
+            return
+        p = c.execute("SELECT level, note FROM paths WHERE id=?", (path_id,)).fetchone()
+        if p is not None and (p["level"] or p["note"]):
+            c.execute("INSERT INTO annotations (sha256, level, note) VALUES (?,?,?)",
+                      (sha256, p["level"], p["note"]))
 
     def set_path_error(self, path_id: int, message: str) -> None:
         with self.transaction() as c:
@@ -610,12 +641,30 @@ class Database:
     # ------------------------------------------------------------ elenchi
     # ---------------------------------------------------------- note e importanza
     def set_annotation(self, path_id: int, level: int | None = None, note: str | None = None) -> None:
-        """Importanza (0-5) e/o nota di un file. None = lascia com'è."""
+        """Importanza (0-5) e/o nota di un file. None = lascia com'è.
+        The values belong to the content (hash): every copy of the same file gets them, and they come
+        back when the file reappears elsewhere after a move or rename."""
         with self.transaction() as c:
             if level is not None:
                 c.execute("UPDATE paths SET level=? WHERE id=?", (max(0, min(5, int(level))), path_id))
             if note is not None:
                 c.execute("UPDATE paths SET note=? WHERE id=?", (note.strip() or None, path_id))
+            r = c.execute("SELECT sha256, level, note FROM paths WHERE id=?", (path_id,)).fetchone()
+            if r is None or r["sha256"] is None:
+                return          # hash not computed yet: _link_annotation saves it when it is
+            if r["level"] or r["note"]:
+                c.execute("INSERT INTO annotations (sha256, level, note) VALUES (?,?,?)"
+                          " ON CONFLICT(sha256) DO UPDATE SET level=excluded.level, note=excluded.note,"
+                          " updated_at=datetime('now','localtime')", (r["sha256"], r["level"], r["note"]))
+            else:
+                c.execute("DELETE FROM annotations WHERE sha256=?", (r["sha256"],))
+            c.execute("UPDATE paths SET level=?, note=? WHERE sha256=?", (r["level"], r["note"], r["sha256"]))
+
+    def same_content_ids(self, path_id: int) -> list[int]:
+        """Ids of all paths with the same content as path_id (path_id included)."""
+        rows = self.conn.execute("SELECT q.id FROM paths p JOIN paths q ON q.sha256 = p.sha256"
+                                 " WHERE p.id=?", (path_id,)).fetchall()
+        return [r[0] for r in rows] or [path_id]
 
     def annotation(self, path_id: int) -> tuple[int, str]:
         r = self.conn.execute("SELECT level, note FROM paths WHERE id=?", (path_id,)).fetchone()

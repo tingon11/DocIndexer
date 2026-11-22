@@ -327,6 +327,59 @@ def scaling(widget) -> float:
     return ctk.ScalingTracker.get_widget_scaling(widget)
 
 
+def px(widget, n: float) -> int:
+    """Logical size -> physical pixels, for plain tk/ttk widgets (Canvas, Treeview columns, PanedWindow),
+    which CustomTkinter does not scale. CTk widgets take logical sizes and must not use this."""
+    return int(round(n * (scaling(widget) or 1.0)))
+
+
+def autowrap(label, max_width: int | None = None, pad: int = 0):
+    """Wrap a CTkLabel's text at the width it is actually given (it must be packed with fill="x" or
+    gridded with sticky "ew"), so long sentences never run past the window on small or zoomed screens.
+    max_width (logical) keeps lines readable on very wide windows."""
+    def on_configure(e):
+        w = int(e.width / (scaling(label) or 1.0)) - pad
+        if max_width:
+            w = min(w, max_width)
+        w = max(120, w)
+        if abs(w - getattr(label, "_autowrap_w", 0)) > 3:
+            label._autowrap_w = w
+            label.configure(wraplength=w)
+
+    tk.Misc.bind(label, "<Configure>", on_configure, add="+")   # the outer frame, in physical pixels
+    return label
+
+
+_CHECK_IMAGES: dict = {}
+
+
+def check_images(widget):
+    """(off, on) images for plain tk.Checkbuttons, sized with the UI zoom: the native Windows indicator
+    stays 13 px at any DPI and becomes a speck on 4K screens."""
+    from PIL import Image, ImageDraw, ImageTk
+
+    s = scaling(widget) or 1.0
+    key = round(s, 2)
+    if key not in _CHECK_IMAGES:
+        n = max(12, round(14 * s))
+        big = n * 4                                     # drawn large and reduced: soft edges
+        pics = []
+        for on in (False, True):
+            img = Image.new("RGBA", (big + 4 * max(2, round(4 * s)), big), (0, 0, 0, 0))   # + gap to the text
+            d = ImageDraw.Draw(img)
+            r = big // 5
+            if on:
+                d.rounded_rectangle((0, 0, big - 1, big - 1), r, fill=BTN)
+                w = max(4, big // 8)
+                d.line([(big * 0.22, big * 0.52), (big * 0.42, big * 0.72), (big * 0.78, big * 0.3)],
+                       fill="#ffffff", width=w, joint="curve")
+            else:
+                d.rounded_rectangle((0, 0, big - 1, big - 1), r, outline=BORDER_STRONG, width=max(4, big // 10))
+            pics.append(ImageTk.PhotoImage(img.resize((img.width // 4, n), Image.LANCZOS), master=widget))
+        _CHECK_IMAGES[key] = tuple(pics)
+    return _CHECK_IMAGES[key]
+
+
 def window_scaling(window) -> float:
     return ctk.ScalingTracker.get_window_scaling(window) or 1.0
 
@@ -355,7 +408,7 @@ def style_tables(root) -> None:
         foreground=TEXT_DIM,
         borderwidth=0,
         relief="flat",
-        padding=(8, 6),
+        padding=(px(root, 8), px(root, 6)),
         font=(mono_font(), 9, "bold"),
     )
     style.map("Treeview.Heading", background=[("active", HOVER)])
@@ -479,18 +532,79 @@ def level_mark(level: int) -> str:
 
 
 def apply_ui_scale(window, percent: int) -> None:
-    """Dimensione dell'interfaccia indipendente dallo zoom di Windows: si annulla il fattore di Windows
-    (DPI) e si applica quello scelto dall'utente. Da chiamare prima di creare i widget."""
-    import tkinter as _tk
+    """Interface size on top of the Windows display zoom (100 = same size as other Windows apps).
 
-    f = max(50, min(250, int(percent or 100))) / 100.0
+    CustomTkinter already makes the process per-monitor DPI aware and multiplies every size by
+    the monitor's DPI factor; `percent` is an extra user zoom applied on top of it. Plain tk/ttk
+    widgets (tables, lists, text boxes) size their point fonts with `tk scaling`, which is kept
+    in step with the same factor, also when the window moves to a monitor with another zoom.
+    Call it before creating the widgets.
+    """
+    f = max(50, min(300, int(percent or 100))) / 100.0
+    ctk.set_widget_scaling(f)
+    ctk.set_window_scaling(f)
     try:
-        dpi = ctk.ScalingTracker.get_window_dpi_scaling(window)
+        dpi = ctk.ScalingTracker.get_window_dpi_scaling(window) or 1.0
     except Exception:  # noqa: BLE001
         dpi = 1.0
-    ctk.set_widget_scaling(f / dpi)
-    ctk.set_window_scaling(f / dpi)
+    _set_tk_scaling(window, dpi * f)
+
+    def _on_dpi_change(widget_scaling, _window_scaling):
+        # moved to a monitor with a different zoom: refresh point fonts and table rows too
+        _set_tk_scaling(window, widget_scaling)
+        try:
+            style_tables(window)
+        except Exception:  # noqa: BLE001
+            pass
+
     try:
-        window.tk.call("tk", "scaling", 96 / 72 * f)     # caratteri dei widget tk (tabelle, liste, testi)
+        ctk.ScalingTracker.add_widget(_on_dpi_change, window)
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _set_tk_scaling(window, factor: float) -> None:
+    import tkinter as _tk
+
+    try:
+        window.tk.call("tk", "scaling", 96 / 72 * factor)
     except _tk.TclError:
         pass
+
+
+def place_window(window, width: float | None = None, height: float | None = None, master=None,
+                 min_size: tuple[int, int] | None = None, y_frac: float = 1 / 3, center: bool = True,
+                 size: bool = True) -> None:
+    """Size and position a window in logical units (the ones CustomTkinter's geometry() expects).
+
+    CustomTkinter multiplies the whole "WxH+X+Y" string by the window scaling, while winfo_*()
+    return physical pixels: everything is converted here, so windows stay centered and are never
+    larger than the screen, at any resolution and zoom. width/height None = requested size.
+    """
+    s = window_scaling(window) or 1.0
+    try:
+        window.update_idletasks()
+    except Exception:  # noqa: BLE001
+        pass
+    sw = window.winfo_screenwidth() / s
+    sh = window.winfo_screenheight() / s - 48          # taskbar
+    w = width if width is not None else window.winfo_reqwidth() / s
+    h = height if height is not None else window.winfo_reqheight() / s
+    w, h = int(min(w, sw * 0.96)), int(min(h, sh * 0.96))
+    if min_size:
+        window.minsize(int(min(min_size[0], w)), int(min(min_size[1], h)))
+    spec = f"{w}x{h}" if size else ""
+    if center:
+        x = y = None
+        try:
+            if master is not None and master.winfo_viewable():
+                x = master.winfo_rootx() / s + (master.winfo_width() / s - w) / 2
+                y = master.winfo_rooty() / s + (master.winfo_height() / s - h) * y_frac
+        except Exception:  # noqa: BLE001
+            x = y = None
+        if x is None:
+            x = max(0, min((sw - w) / 2, sw - w))
+            y = max(0, min((sh - h) * y_frac, sh - h))
+        spec += f"+{max(0, int(x))}+{max(0, int(y))}"
+    if spec:
+        window.geometry(spec)

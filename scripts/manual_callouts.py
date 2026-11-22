@@ -193,7 +193,7 @@ def settings_config(s, app):
             T(st, "Aggiungi la voce «Aggiungi a DocIndexer» al menu del tasto destro delle cartelle in Esplora file"),
             gridrow(T(st, "Scorciatoia da tastiera")), first + last,
             gridrow(T(st, "Salta i file più grandi di (MB)")),
-            gridrow(T(st, "Dimensione interfaccia (%) — non segue lo zoom di Windows"))]
+            gridrow(T(st, "Dimensione interfaccia (%) — 100 = come lo zoom di Windows"))]
 
 
 def settings_tools(s, app):

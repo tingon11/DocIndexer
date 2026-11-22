@@ -15,8 +15,9 @@ from __future__ import annotations
 from .i18n_strings import ORDER, STRINGS
 from .i18n_strings_daemon import STRINGS as _DAEMON
 from .i18n_strings_extra import STRINGS as _EXTRA
+from .i18n_strings_portable import STRINGS as _PORTABLE
 
-STRINGS = {**STRINGS, **_DAEMON, **_EXTRA}
+STRINGS = {**STRINGS, **_DAEMON, **_EXTRA, **_PORTABLE}
 
 LANGUAGES = {
     "it": "Italiano", "en": "English", "fr": "Français", "de": "Deutsch", "es": "Español",

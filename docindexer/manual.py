@@ -197,12 +197,7 @@ class ManualWindow(ctk.CTkToplevel):
         self.title("DocIndexer · " + tr("Manuale"))
         self._fonts()
         self._build()
-        w, h = 1180, 860
-        sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        w, h = min(w, sw - 40), min(h, sh - 80)
-        x = app.winfo_rootx() + max(0, (app.winfo_width() - w) // 2)
-        y = app.winfo_rooty() + max(0, (app.winfo_height() - h) // 3)
-        self.geometry(f"{w}x{h}+{max(0, x)}+{max(0, y)}")
+        theme.place_window(self, 1180, 860, master=app)   # logical units, fits any screen/zoom
         self.bind("<Escape>", lambda _e: self._escape())
         self.bind("<Control-f>", lambda _e: self._focus_search())
         self.bind("<F3>", lambda _e: self.find_next(1))

@@ -29,6 +29,14 @@ DocIndexer mban një indeks të tekstit të dokumenteve që ndodhen në dosjet q
 - Modeli kryesor OCR (alfabeti latin si dhe kinezisht e japonisht) është i përfshirë tashmë. Alfabetet e tjera dhe mjetet fakultative (ExifTool për metadatat, 7-Zip për arkivat) shkarkohen nga **Cilësimet › Mjete të jashtme** (shih [kapitullin 13](#13-cilësimet)).
 - Dokumentet nuk zhvendosen, nuk kopjohen dhe nuk ndryshohen kurrë.
 
+### Përdorimi portativ në një disk të jashtëm
+
+DocIndexer mund të qëndrojë në një disk të jashtëm ose në një USB bashkë me dosjet që indekson: programi, cilësimet (`config.json`) dhe baza e të dhënave janë në të njëjtën dosje dhe udhëtojnë bashkë. Nuk ka asgjë për të aktivizuar: mënyra portative është automatike.
+
+- Nëse në një PC tjetër disku merr një shkronjë tjetër (për shembull ishte **E:** dhe tani është **F:**), DocIndexer e kupton në nisje dhe përditëson vetë të gjitha shtigjet e atij disku: dosjet e monitoruara, nëndosjet e përjashtuara, kërkimet e ruajtura dhe indeksin. Nuk fillon nga e para: teksti i lexuar tashmë, ngjyrat e rëndësisë dhe shënimet mbeten. Te **Regjistri** i Monitorimit një rresht tregon shkronjën e vjetër dhe të renë dhe sa shtigje u përditësuan.
+- Dosjet në disqe të tjerë (për shembull **C:**) nuk preken. Nëse një disk i monitoruar nuk është i lidhur, skedarët e tij mbeten në indeks dhe kontrollohen përsëri kur rikthehet.
+- **Nis me Windows** dhe zëri **Shto në DocIndexer** i klikimit të djathtë ruhen në Windows, jo në dosjen e programit: në çdo PC duhen aktivizuar përsëri te **Cilësimet › Konfigurimi › Nisja** (shihni [kapitullin 14](#14-ikona-pranë-orës-dhe-nisja-me-windows)).
+
 ## 2. Nisja e parë: konfigurimi i udhëhequr
 
 ### Gjuha dhe kushtet e përdorimit
@@ -129,6 +137,8 @@ Monitorimi tregon se ku ka arritur indeksimi.
 
 Si punon: fillimisht numëron skedarët, pastaj llogarit për secilin një gjurmë të përmbajtjes (SHA-256) dhe nxjerr tekstin. Një skedar identik me një të lexuar më parë nuk analizohet përsëri; një skedar i zhvendosur ose i riemërtuar ndryshon vetëm shtegun në indeks; një skedar i fshirë hiqet.
 
+Nëse hiqni të gjitha dosjet e monitoruara, DocIndexer heq skedarët e tyre nga indeksi dhe Monitorimi kthehet në zero: grafiku, numëruesit dhe ecuria nisin nga zero derisa të shtoni një dosje të re.
+
 ## 5. Burimet për indeksimin dhe temperaturat
 
 Në Monitorim, kutia **Burimet për indeksimin** vendos se sa nga PC-ja mund të përdorë DocIndexer.
@@ -199,6 +209,8 @@ Kutia **Burimet e përdorura nga DocIndexer** tregon CPU-në dhe RAM-in që ka p
 
 **Paraparja** në të djathtë tregon faqen e vërtetë të dokumentit me përputhjet në kornizë: shigjetat ndryshojnë faqen, **−**, **Përshtat** dhe **+** ndryshojnë zmadhimin (edhe rrota e miut), **◀ Përputhje** dhe **Përputhje ▶** kalojnë nga një gjetje te tjetra, **Hap origjinalin** (ose një klikim i dyfishtë mbi rezultatin) e hap skedarin me programin e tij. Për dokumentet Office paraparja përgatitet me Office dhe mund të zgjasë disa sekonda.
 
+**Hapja e dosjes së një rezultati.** Një klikim në qelizën **Dosja** të një rezultati hap dosjen në File Explorer me skedarin tashmë të zgjedhur. E njëjta gjë vlen në skedat **Dokumentet** dhe **Të rëndësishme**.
+
 ### Asnjë rezultat i saktë
 
 Nëse një kërkim nuk gjen asgjë, DocIndexer provon sërish vetë, duke lejuar një gabim shtypi ose OCR për fjalë. Atëherë mbi rezultatet shfaqet një njoftim i kuq që pulson disa herë: **Asnjë rezultat i saktë: shfaqen ata me 1 gabim shtypi ose OCR**. Kontrolloni rezultatet: mund të përmbajnë fjalë të ngjashme me atë që kërkuat.
@@ -252,7 +264,9 @@ Një shprehje e rregullt (regex) kërkon një *model* në vend të një fjale: p
 
 ## 9. Rëndësia dhe shënimet
 
-Në paraparje, nën emrin e skedarit, çdo dokument mund të ketë një **ngjyrë rëndësie** (e kaltër, e gjelbër, e verdhë, portokalli, e kuqe, nga më pak te më e rëndësishmja; **Asnjë** e heq) dhe një **shënim** të shkruar nga ju (**Ruaj shënimin**, **Fshi shënimin**). Ngjyra dhe shënimi mbeten të lidhura me skedarin edhe nëse zhvendoset, riemërtohet ose ndryshohet.
+Në paraparje, nën emrin e skedarit, çdo dokument mund të ketë një **ngjyrë rëndësie** (e kaltër, e gjelbër, e verdhë, portokalli, e kuqe, nga më pak te më e rëndësishmja; **Asnjë** e heq) dhe një **shënim** të shkruar nga ju (**Ruaj shënimin**, **Fshi shënimin**).
+
+Ngjyra dhe shënimi i përkasin **përmbajtjes** së skedarit (gjurmës së tij SHA-256), jo shtegut. Nëse e zhvendosni ose e riemërtoni skedarin, edhe me DocIndexer të mbyllur ose në një disk tjetër, i gjeni përsëri sapo skedari kontrollohet përsëri. Kopjet identike të të njëjtit skedar kanë të njëjtën ngjyrë dhe të njëjtin shënim: nëse i ndryshoni në një kopje, ndryshojnë në të gjitha. Nëse e modifikoni skedarin, ngjyra dhe shënimi mbeten.
 
 ![Të rëndësishme](07-important.png)
 
@@ -286,6 +300,7 @@ Skeda **Dokumentet** tregon të gjithë skedarët e indeksuar.
 - **Të gjitha / Të indeksuar / Në radhë / Të anashkaluar / Gabime**: filtron sipas gjendjes. **Dosja** filtron sipas dosjes së monitoruar. **Rifresko** e ringarkon listën.
 - Kolonat tregojnë rëndësinë, emrin, dosjen, llojin, gjendjen, gjuhën, faqet, faqet e lexuara me OCR, karakteret, datat e krijimit dhe të ndryshimit dhe gjurmën SHA-256. Një klikim mbi kokën e kolonës rendit; duke kaluar mbi një qelizë të shkurtuar shfaqet teksti i plotë.
 - Mund të zgjidhni disa rreshta (Ctrl ose Shift + klikim, Ctrl+A). **Shfaq në Eksploruesin e skedarëve** hap dosjen e skedarit, **Rianalizo** rilexon skedarët e zgjedhur, **Eksporto...** ruan listën. Një klikim i dyfishtë e hap skedarin.
+- Një klikim në qelizën **Dosja** hap dosjen në File Explorer me skedarin të zgjedhur (edhe në skedën **Të rëndësishme**).
 
 **Skedarë të mëdhenj.** Skedarët më të mëdhenj se kufiri i caktuar (200 MB si parazgjedhje) nuk analizohen vetë: butoni **Skedarë të mëdhenj** bëhet portokalli dhe tregon sa janë në pritje.
 
@@ -372,12 +387,12 @@ Ndryshimet vlejnë vetëm pas **Ruaj**. **Anulo ndryshimet** kthehet te cilësim
 | **③** | **Shkurtore e tastierës** | Tastet e kërkimit të shpejtë (bosh = çaktivizuar). |
 | **④** | **Puna në sfond** | CPU me kompjuterin në përdorim dhe joaktiv, pritja, programet e zëna. |
 | **⑤** | **Anashkalo skedarët më të mëdhenj se (MB)** | Mbi këtë kufi skedarët shkojnë te **Skedarë të mëdhenj**. |
-| **⑥** | **Madhësia e ndërfaqes (%) — nuk ndjek zmadhimin e Windows** | Zmadhon ose zvogëlon gjithë dritaren. |
+| **⑥** | **Madhësia e ndërfaqes (%) — 100 = si zmadhimi i Windows** | 100 = si aplikacionet e tjera të Windows; më shumë zmadhon, më pak zvogëlon. |
 
 - **Nisja**: nisja me Windows (vlen menjëherë).
 - **Shto në DocIndexer**: shton zërin në menynë e klikimit të djathtë të dosjeve në File Explorer; vlen menjëherë, pa Ruaj (shih kapitullin 14).
 - **Kërkim i shpejtë**: shkurtorja e tastierës, për shembull `ctrl+alt+d`, `ctrl+shift+f` ose `win+alt+d`; bosh = e çaktivizuar. Nëse shkurtoren e përdor tashmë një program tjetër, shfaqet një paralajmërim.
-- **Puna në sfond**: CPU maksimale ndërsa përdorni PC-në dhe kur është në pushim, pas sa minutash PC-ja konsiderohet në pushim, mbi cilën ngarkesë të programeve të tjera DocIndexer pret, fijet OCR, çdo sa orë rikontrollohen të gjitha dosjet, madhësia maksimale e skedarëve (më të mëdhenjtë shkojnë te **Skedarë të mëdhenj**), madhësia e ndërfaqes (në %, e pavarur nga zmadhimi i Windows; vlen nga nisja e ardhshme). Vlerat e para ndryshojnë edhe me rrëshqitësin e Monitorimit.
+- **Puna në sfond**: CPU maksimale ndërsa përdorni PC-në dhe kur është në pushim, pas sa minutash PC-ja konsiderohet në pushim, mbi cilën ngarkesë të programeve të tjera DocIndexer pret, fijet OCR, çdo sa orë rikontrollohen të gjitha dosjet, madhësia maksimale e skedarëve (më të mëdhenjtë shkojnë te **Skedarë të mëdhenj**), madhësia e ndërfaqes (në %, 100 = si zmadhimi i Windows, pra e njëjta madhësi si aplikacionet e tjera; vlen nga nisja e ardhshme). Vlerat e para ndryshojnë edhe me rrëshqitësin e Monitorimit.
 - **Module shtesë**: metadata me ExifTool, teksti i skedarëve brenda arkivave (7-Zip), baza të dhënash SQLite, dBASE/FoxPro dhe Access. Çdo modul i ruan të dhënat veçmas; te Kërkimi zgjidhni ku të kërkohet.
 - **OCR (RapidOCR)**: modeli. **Automatik** lexon faqen e parë të skanuar me modelin latin dhe, nëse rezultati është i pasigurt, provon modelet e tjera të shkarkuara dhe mban atë që lexon më mirë. Një **rezolucion OCR (DPI)** më i lartë lexon më mirë karakteret e vogla, por është më i ngadaltë. **Testo OCR** bën një provë.
 - **Baza të dhënash SQLite**: skedari i bazës së të dhënave.
@@ -420,6 +435,8 @@ Nëse e hapni DocIndexer për herë të dytë nuk niset një kopje e re: shfaqet
 
 Me opsionin **Shto në DocIndexer** aktiv (Cilësimet › Konfigurimi › Nisja), klikimi i djathtë mbi një dosje në File Explorer shfaq **Shto në DocIndexer**: dosja shtohet te dosjet e monitoruara dhe indeksimi nis menjëherë, edhe nëse DocIndexer ishte i hapur. Në Windows 11 zëri është te «Shfaq më shumë opsione» (ose Shift+F10). Nëse dosja monitorohet tashmë, ose ndodhet brenda një dosjeje të monitoruar, DocIndexer e njofton dhe nuk ndryshon asgjë; nëse përmban dosje që monitorohen tashmë, zë vendin e tyre. Nuk nevojiten të drejta administratori.
 
+**Në disa PC.** Zëri i klikimit të djathtë dhe nisja me Windows ruhen në Windows-in e PC-së që përdorni, për përdoruesin tuaj. Nëse e përdorni DocIndexer nga një disk i jashtëm, aktivizojini përsëri në çdo PC te **Cilësimet › Konfigurimi › Nisja**. Nëse në të njëjtin PC programi ndryshon dosje ose shkronjë disku, zëri i klikimit të djathtë përditësohet vetë në nisjen e ardhshme.
+
 ## 15. Probleme të shpeshta
 
 - **Një dokument nuk gjendet.** Kontrolloni në Monitorim që indeksimi të ketë mbaruar; te Dokumentet kërkoni skedarin sipas emrit dhe shihni gjendjen e tij (*Në radhë*, *Të anashkaluar*, *Gabime*). Sigurohuni që dosja të jetë e monitoruar dhe që prapashtesa të jetë ndër të përfshirat.
@@ -429,4 +446,6 @@ Me opsionin **Shto në DocIndexer** aktiv (Cilësimet › Konfigurimi › Nisja)
 - **Indeksimi është i ngadaltë.** Lëvizni rrëshqitësin djathtas; kur PC-ja është në pushim, DocIndexer përshpejtohet vetë.
 - **Një skedar shumë i madh nuk shfaqet.** Ndodhet te **Dokumentet › Skedarë të mëdhenj**, në pritje të miratimit tuaj.
 - **Shkurtorja e kërkimit të shpejtë nuk punon.** E përdor një program tjetër: zgjidhni një tjetër te Cilësimet › Konfigurimi.
-- **Zhvendosja e DocIndexer në një PC tjetër.** Kopjoni gjithë dosjen e programit, ose krijoni një kopje rezervë dhe riktheni atë në PC-në e re.
+- **Zhvendosja e DocIndexer në një PC tjetër.** Kopjoni gjithë dosjen e programit, ose krijoni një kopje rezervë dhe riktheni atë në PC-në e re. Pastaj, nëse ju duhen, aktivizoni përsëri **Nis me Windows** dhe **Shto në DocIndexer**.
+- **Disku i jashtëm ka një shkronjë tjetër.** Nuk keni pse të bëni asgjë: në nisje DocIndexer i përditëson vetë shtigjet (shihni [kapitullin 1](#1-para-se-të-filloni)).
+- **Teksti është shumë i vogël ose shumë i madh.** Ndryshoni **Madhësia e ndërfaqes (%)** te Cilësimet › Konfigurimi: 100 është madhësia e aplikacioneve të tjera të Windows. Vlen nga nisja e ardhshme.
