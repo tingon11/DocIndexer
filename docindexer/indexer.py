@@ -475,7 +475,14 @@ class Indexer:
                     self.wake.clear()
                     continue
                 if not self.cfg.watch_dirs:
+                    if self._rescan:
+                        # nessuna cartella monitorata: la scansione toglie dall'indice i file delle cartelle rimosse
+                        self._rescan = False
+                        self._scan()
+                        if self.db.purge_orphans():
+                            self.log(tr("Rimossi dall'indice i contenuti dei file cancellati."))
                     self.status.phase = "idle"
+                    self.status.current = ""
                     self.wake.wait(5.0)
                     self.wake.clear()
                     continue
