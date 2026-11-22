@@ -2,4 +2,4 @@
 # Licenza GNU AGPL-3.0 con i termini aggiuntivi del file NOTICE (attribuzione all'autore).
 """DocIndexer: indicizzatore di documenti con OCR e ricerca full-text su SQLite (FTS5)."""
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
