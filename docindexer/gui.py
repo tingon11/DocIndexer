@@ -2350,7 +2350,7 @@ class SettingsPage(ctk.CTkFrame):
                ("ocr_threads", "Thread OCR"),
                ("rescan_hours", "Controllo completo delle cartelle ogni (ore)"),
                ("max_file_mb", "Salta i file più grandi di (MB)"),
-               ("ui_scale", "Dimensione interfaccia (%) — non segue lo zoom di Windows"),
+               ("ui_zoom", "Dimensione interfaccia (%) — 100 = come lo zoom di Windows"),
                ("ocr_dpi", "Risoluzione OCR (DPI)"))
 
     def __init__(self, master, app: "App"):
@@ -2594,7 +2594,7 @@ class SettingsPage(ctk.CTkFrame):
 
     def save(self):
         old_db = self.app.cfg.db_path
-        old_scale = self.app.cfg.ui_scale
+        old_scale = self.app.cfg.ui_zoom
         old_hotkey = self.app.cfg.quick_hotkey
         try:
             default_model = self.vars["ocr_model"].get().strip() or ocr.DEFAULT_MODEL
@@ -2624,7 +2624,7 @@ class SettingsPage(ctk.CTkFrame):
             self.app.indexer.settings_changed()
         self.app.pages["search"].refresh_folders()
         msg = tr("Impostazioni salvate.")
-        if self.app.cfg.ui_scale != old_scale:
+        if self.app.cfg.ui_zoom != old_scale:
             msg += "\n\n" + tr("La nuova dimensione dell'interfaccia vale dal prossimo avvio di DocIndexer.")
         messagebox.showinfo(tr("Impostazioni"), msg)
         return True
@@ -2695,11 +2695,10 @@ class App(ctk.CTk):
         theme.apply()                      # tema scuro di PCSnex, prima di creare i widget
         super().__init__()
         hide_until_ready(self)                         # niente lampo della barra bianca all'apertura
-        theme.apply_ui_scale(self, self.cfg.ui_scale)   # dimensione indipendente dallo zoom di Windows
+        theme.apply_ui_scale(self, self.cfg.ui_zoom)   # Windows zoom x user zoom
         self.title(tr("DocIndexer - Indicizzatore documenti"))
         theme.set_icon(self)
-        self.geometry("1280x800")
-        self.minsize(1000, 640)
+        theme.place_window(self, 1280, 800, min_size=(1000, 640))   # never larger than the screen
         self.fonts = theme.Fonts()
         self.h1 = self.fonts.page
         self.events: queue.Queue = queue.Queue()

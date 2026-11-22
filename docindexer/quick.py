@@ -82,9 +82,7 @@ class QuickSearch(ctk.CTkToplevel):
         self.entry.bind("<Down>", lambda e: (self._move(1), "break")[1])
         self.entry.bind("<Up>", lambda e: (self._move(-1), "break")[1])
         self.tree.bind("<Double-1>", lambda e: self.open_file())
-        sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        w, h = min(900, sw - 40), min(520, sh - 80)
-        self.geometry(f"{w}x{h}+{(sw - w) // 2}+{int(sh * 0.12)}")
+        theme.place_window(self, 900, 520, y_frac=0.12)   # logical units, fits any screen/zoom
         self.bring_up()
 
     def _hint(self) -> str:

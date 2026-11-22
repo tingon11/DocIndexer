@@ -15,15 +15,7 @@ from .i18n import tr
 
 
 def _center(win, master, w, h):
-    win.update_idletasks()
-    try:
-        if master.state() == "withdrawn":
-            raise tk.TclError
-        x = master.winfo_rootx() + (master.winfo_width() - w) // 2
-        y = master.winfo_rooty() + (master.winfo_height() - h) // 3
-    except tk.TclError:
-        x, y = (win.winfo_screenwidth() - w) // 2, (win.winfo_screenheight() - h) // 3
-    win.geometry(f"{w}x{h}+{max(0, x)}+{max(0, y)}")
+    theme.place_window(win, w, h, master=master)   # logical units, fits any screen/zoom
 
 
 class SaveSearchDialog(ctk.CTkToplevel):
@@ -54,7 +46,7 @@ class SaveSearchDialog(ctk.CTkToplevel):
                       command=self.destroy).pack(side="right", padx=8)
         self.bind("<Return>", lambda _e: self.ok())
         self.bind("<Escape>", lambda _e: self.destroy())
-        _center(self, app, 540, self.winfo_reqheight())
+        _center(self, app, 540, None)   # None = height the content asks for
         self.deiconify()
         self.after(50, lambda: (e.focus_set(), e.select_range(0, "end")))
         self.grab_set()

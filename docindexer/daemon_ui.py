@@ -951,8 +951,7 @@ class SetupWizard(ctk.CTkToplevel):
         self.cfg = cfg
         self.on_done = on_done
         decorate(self, tr("DocIndexer - configurazione iniziale"), on_close=self.cancel)
-        self.geometry("1360x860")
-        self.minsize(1100, 700)
+        theme.place_window(self, 1360, 860, master=master, min_size=(1100, 700))
         try:
             self.transient(master)
         except tk.TclError:

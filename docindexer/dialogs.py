@@ -195,17 +195,11 @@ def _dialog(title: str, message: str, kind: str, buttons: list[tuple[str, object
             focus = b
     win.bind("<Escape>", lambda e: close(cancel))
     win.bind("<Return>", lambda e: close(default))
+    # position only: the dialog keeps the size its content asks for (logical units, any zoom)
     win.update_idletasks()
-    w, h = max(420, win.winfo_reqwidth()), win.winfo_reqheight()
-    try:
-        x = master.winfo_rootx() + (master.winfo_width() - w) // 2
-        y = master.winfo_rooty() + (master.winfo_height() - h) // 3
-        if master.state() == "withdrawn":
-            raise tk.TclError
-    except (tk.TclError, AttributeError):
-        x = (win.winfo_screenwidth() - w) // 2
-        y = (win.winfo_screenheight() - h) // 3
-    win.geometry(f"+{max(x, 0)}+{max(y, 0)}")
+    s = theme.window_scaling(win)
+    theme.place_window(win, max(420, win.winfo_reqwidth() / s), win.winfo_reqheight() / s, master=master,
+                       size=False)
     win.deiconify()
     win.lift()
     win.attributes("-topmost", True)

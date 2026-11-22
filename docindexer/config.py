@@ -182,8 +182,9 @@ class AppConfig:
     mod_access: bool = True
     # scorciatoia globale della ricerca rapida (vuota = disattivata), es. ctrl+alt+d (D di DocIndexer)
     quick_hotkey: str = "ctrl+alt+d"
-    # dimensione dell'interfaccia in %, indipendente dallo zoom di Windows (100 = come a zoom 100%)
-    ui_scale: int = 100
+    # interface size in %, on top of the Windows display zoom (100 = same size as other Windows apps).
+    # Replaces the old "ui_scale", which cancelled the Windows zoom and made text tiny on 4K screens.
+    ui_zoom: int = 100
     # lingua dell'interfaccia: it en fr de es el sq pl
     language: str = "it"
     # termini d'uso accettati alla prima apertura (terms.TERMS_VERSION; vuoto = mai) e quando

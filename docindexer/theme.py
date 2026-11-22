@@ -479,18 +479,79 @@ def level_mark(level: int) -> str:
 
 
 def apply_ui_scale(window, percent: int) -> None:
-    """Dimensione dell'interfaccia indipendente dallo zoom di Windows: si annulla il fattore di Windows
-    (DPI) e si applica quello scelto dall'utente. Da chiamare prima di creare i widget."""
-    import tkinter as _tk
+    """Interface size on top of the Windows display zoom (100 = same size as other Windows apps).
 
-    f = max(50, min(250, int(percent or 100))) / 100.0
+    CustomTkinter already makes the process per-monitor DPI aware and multiplies every size by
+    the monitor's DPI factor; `percent` is an extra user zoom applied on top of it. Plain tk/ttk
+    widgets (tables, lists, text boxes) size their point fonts with `tk scaling`, which is kept
+    in step with the same factor, also when the window moves to a monitor with another zoom.
+    Call it before creating the widgets.
+    """
+    f = max(50, min(300, int(percent or 100))) / 100.0
+    ctk.set_widget_scaling(f)
+    ctk.set_window_scaling(f)
     try:
-        dpi = ctk.ScalingTracker.get_window_dpi_scaling(window)
+        dpi = ctk.ScalingTracker.get_window_dpi_scaling(window) or 1.0
     except Exception:  # noqa: BLE001
         dpi = 1.0
-    ctk.set_widget_scaling(f / dpi)
-    ctk.set_window_scaling(f / dpi)
+    _set_tk_scaling(window, dpi * f)
+
+    def _on_dpi_change(widget_scaling, _window_scaling):
+        # moved to a monitor with a different zoom: refresh point fonts and table rows too
+        _set_tk_scaling(window, widget_scaling)
+        try:
+            style_tables(window)
+        except Exception:  # noqa: BLE001
+            pass
+
     try:
-        window.tk.call("tk", "scaling", 96 / 72 * f)     # caratteri dei widget tk (tabelle, liste, testi)
+        ctk.ScalingTracker.add_widget(_on_dpi_change, window)
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _set_tk_scaling(window, factor: float) -> None:
+    import tkinter as _tk
+
+    try:
+        window.tk.call("tk", "scaling", 96 / 72 * factor)
     except _tk.TclError:
         pass
+
+
+def place_window(window, width: float | None = None, height: float | None = None, master=None,
+                 min_size: tuple[int, int] | None = None, y_frac: float = 1 / 3, center: bool = True,
+                 size: bool = True) -> None:
+    """Size and position a window in logical units (the ones CustomTkinter's geometry() expects).
+
+    CustomTkinter multiplies the whole "WxH+X+Y" string by the window scaling, while winfo_*()
+    return physical pixels: everything is converted here, so windows stay centered and are never
+    larger than the screen, at any resolution and zoom. width/height None = requested size.
+    """
+    s = window_scaling(window) or 1.0
+    try:
+        window.update_idletasks()
+    except Exception:  # noqa: BLE001
+        pass
+    sw = window.winfo_screenwidth() / s
+    sh = window.winfo_screenheight() / s - 48          # taskbar
+    w = width if width is not None else window.winfo_reqwidth() / s
+    h = height if height is not None else window.winfo_reqheight() / s
+    w, h = int(min(w, sw * 0.96)), int(min(h, sh * 0.96))
+    if min_size:
+        window.minsize(int(min(min_size[0], w)), int(min(min_size[1], h)))
+    spec = f"{w}x{h}" if size else ""
+    if center:
+        x = y = None
+        try:
+            if master is not None and master.winfo_viewable():
+                x = master.winfo_rootx() / s + (master.winfo_width() / s - w) / 2
+                y = master.winfo_rooty() / s + (master.winfo_height() / s - h) * y_frac
+        except Exception:  # noqa: BLE001
+            x = y = None
+        if x is None:
+            x = max(0, min((sw - w) / 2, sw - w))
+            y = max(0, min((sh - h) * y_frac, sh - h))
+        spec += f"+{max(0, int(x))}+{max(0, int(y))}"
+    if spec:
+        window.geometry(spec)
