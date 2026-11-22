@@ -49,14 +49,17 @@ Pause/Resume, Check folders now and Exit. Starting it a second time just shows t
 ## Importance and notes
 
 In the preview, under the file name, every document can get an **importance colour** (light blue, green,
-yellow, orange, red) and a **note**. They stay attached to the file even when it is moved, renamed or
-edited. The **Important** tab lists the coloured documents (most important first, with the note), the
+yellow, orange, red) and a **note**. They belong to the file content (SHA-256 hash), not to its path: they
+follow the file when it is moved or renamed (even while DocIndexer is closed or onto another drive), identical
+copies share them, and they stay when the file is edited. The **Important** tab lists the coloured documents (most important first, with the note), the
 lists show the colour as a tinted row, and the search has an **only important documents** option.
 
 All file lists show the **creation** and modification dates and can be sorted by clicking a column header
 (A-Z, click again for Z-A). Besides folder names to skip everywhere, you can exclude **specific
-subfolders** by path (e.g. `Documents\garbage`). The **interface size** is a setting (100% by default) and
-does not follow the Windows zoom.
+subfolders** by path (e.g. `Documents\garbage`). The **interface size** is a setting on top of the Windows
+zoom (100% = same size as other Windows apps). A click on the **Folder** cell in Search, Documents and
+Important opens File Explorer with the file selected. Removing all monitored folders empties the index and
+resets the Monitor.
 
 ## Add-on modules
 
@@ -127,6 +130,14 @@ reads best is used for the whole document (for example a Russian scan uses the C
 
 - **Start with Windows**: switch in the Monitor tab, tick in the tray icon menu, or Settings > Configuration.
   It takes effect immediately (HKCU Run key, no administrator rights).
+- **Add to DocIndexer** in the File Explorer right-click menu of folders and drives (Settings > Configuration
+  > Startup): adds the folder to the monitored folders and starts indexing it. Registered under HKCU, no
+  administrator rights; on Windows 11 it is under "Show more options".
+- **Portable use**: program, `config.json` and database live in the same folder, so DocIndexer can run from an
+  external drive together with the folders it indexes. When the drive gets another letter on another PC
+  (E: -> F:), all stored paths on that drive (monitored folders, exclusions, saved searches, database) are
+  rewritten at startup and a line in the Monitor log says so. Start with Windows and the right-click entry
+  are stored in the Windows registry, so they must be switched on again on each PC.
 - **Backup**: Settings > Backup creates a .zip with the database (index, notes, importance colours), the
   settings, the regex patterns and the saved searches, also while indexing runs. Restoring replaces them and
   restarts DocIndexer; the previous database is kept as `.before-restore`.

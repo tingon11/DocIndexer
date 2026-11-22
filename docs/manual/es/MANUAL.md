@@ -29,6 +29,14 @@ DocIndexer mantiene un índice del texto de los documentos que hay en las carpet
 - El modelo OCR principal (alfabeto latino más chino y japonés) ya está incluido. Los demás alfabetos y las herramientas opcionales (ExifTool para los metadatos, 7-Zip para los archivos comprimidos) se descargan desde **Ajustes › Herramientas externas** (véase el [capítulo 13](#13-ajustes)).
 - Los documentos nunca se mueven, copian ni modifican.
 
+### Uso portátil en un disco externo
+
+DocIndexer puede estar en un disco externo o en una memoria USB junto con las carpetas que indexa: programa, ajustes (`config.json`) y base de datos están en la misma carpeta y viajan juntos. No hay nada que activar: el modo portátil es automático.
+
+- Si en otro PC el disco recibe otra letra (por ejemplo era **E:** y ahora es **F:**), DocIndexer lo detecta al iniciarse y actualiza por sí solo todas las rutas de ese disco: carpetas vigiladas, subcarpetas excluidas, búsquedas guardadas e índice. No empieza de cero: el texto ya leído, los colores de importancia y las notas se conservan. En el **Registro** del Monitor una línea indica la letra antigua y la nueva y cuántas rutas se han actualizado.
+- Las carpetas que están en otros discos (por ejemplo **C:**) no se tocan. Si un disco vigilado no está conectado, sus archivos se quedan en el índice y se vuelven a comprobar cuando vuelve a estar disponible.
+- **Iniciar con Windows** y la entrada **Añadir a DocIndexer** del botón derecho se guardan en Windows, no en la carpeta del programa: en cada PC hay que volver a activarlas en **Ajustes › Configuración › Inicio** (vea el [capítulo 14](#14-icono-junto-al-reloj-e-inicio-con-windows)).
+
 ## 2. Primer inicio: configuración guiada
 
 ### Idioma y términos de uso
@@ -129,6 +137,8 @@ El Monitor muestra cómo va la indexación.
 
 Cómo trabaja: primero cuenta los archivos, luego calcula para cada uno una huella del contenido (SHA-256) y extrae el texto. Un archivo idéntico a otro ya leído no se vuelve a analizar; un archivo movido o renombrado solo cambia de ruta en el índice; un archivo borrado se elimina.
 
+Si quita todas las carpetas vigiladas, DocIndexer quita sus archivos del índice y el Monitor se pone a cero: gráfico, contadores y avance vuelven a empezar de cero hasta que añada una carpeta nueva.
+
 ## 5. Recursos para la indexación y temperaturas
 
 En el Monitor, el recuadro **Recursos para la indexación** decide qué parte del PC puede usar DocIndexer.
@@ -199,6 +209,8 @@ El recuadro **Recursos usados por DocIndexer** muestra la CPU y la RAM que usa e
 
 **La vista previa** de la derecha muestra la página real del documento con las coincidencias enmarcadas: las flechas cambian de página, **−**, **Ajustar** y **+** cambian el zoom (también la rueda del ratón), **◀ Coincidencia** y **Coincidencia ▶** saltan de un resultado a otro, **Abrir original** (o un doble clic en el resultado) abre el archivo con su programa. En los documentos de Office la vista previa se prepara con Office y puede tardar unos segundos.
 
+**Abrir la carpeta de un resultado.** Un clic en la celda **Carpeta** de un resultado abre la carpeta en el Explorador de archivos con el archivo ya seleccionado. Lo mismo vale en las pestañas **Documentos** e **Importantes**.
+
 ### Sin resultados exactos
 
 Si una búsqueda no encuentra nada, DocIndexer vuelve a intentarlo solo, tolerando un error de escritura u OCR por palabra. En ese caso aparece sobre los resultados un aviso rojo que parpadea unas veces: **Sin resultados exactos: se muestran los que tienen 1 error de escritura u OCR**. Revisa los resultados: pueden contener palabras parecidas a la buscada.
@@ -252,7 +264,9 @@ Una expresión regular (regex) busca un *patrón* en lugar de una palabra: por e
 
 ## 9. Importancia y notas
 
-En la vista previa, bajo el nombre del archivo, cada documento puede tener un **color de importancia** (celeste, verde, amarillo, naranja, rojo, del menos al más importante; **Ninguna** lo quita) y una **nota** escrita por usted (**Guardar nota**, **Borrar nota**). El color y la nota siguen unidos al archivo aunque se mueva, se renombre o se modifique.
+En la vista previa, bajo el nombre del archivo, cada documento puede tener un **color de importancia** (celeste, verde, amarillo, naranja, rojo, del menos al más importante; **Ninguna** lo quita) y una **nota** escrita por usted (**Guardar nota**, **Borrar nota**).
+
+El color y la nota pertenecen al **contenido** del archivo (su huella SHA-256), no a su ruta. Si mueve o cambia el nombre del archivo, incluso con DocIndexer cerrado o a otro disco, los recupera en cuanto el archivo se vuelve a comprobar. Las copias idénticas de un mismo archivo tienen el mismo color y la misma nota: si los cambia en una copia, cambian en todas. Si modifica el archivo, el color y la nota se mantienen.
 
 ![Importantes](07-important.png)
 
@@ -286,6 +300,7 @@ La pestaña **Documentos** muestra todos los archivos indexados.
 - **Todos / Indexados / En cola / Omitidos / Errores**: filtra por estado. **Carpeta** filtra por carpeta supervisada. **Actualizar** vuelve a cargar la lista.
 - Las columnas muestran importancia, nombre, carpeta, tipo, estado, idioma, páginas, páginas leídas con OCR, caracteres, fechas de creación y modificación y huella SHA-256. Un clic en la cabecera ordena; al pasar por encima de una celda recortada aparece el texto completo.
 - Puede seleccionar varias filas (Ctrl o Mayús + clic, Ctrl+A). **Mostrar en el Explorador** abre la carpeta del archivo, **Volver a analizar** vuelve a leer los archivos seleccionados, **Exportar...** guarda la lista. Un doble clic abre el archivo.
+- Un clic en la celda **Carpeta** abre la carpeta en el Explorador de archivos con el archivo seleccionado (también en la pestaña **Importantes**).
 
 **Archivos grandes.** Los archivos más grandes que el límite fijado (200 MB de forma predeterminada) no se analizan solos: el botón **Archivos grandes** se vuelve naranja e indica cuántos esperan.
 
@@ -372,12 +387,12 @@ Los cambios valen solo después de **Guardar**. **Descartar cambios** vuelve a l
 | **③** | **Atajo de teclado** | Las teclas de la búsqueda rápida (vacío = desactivada). |
 | **④** | **Trabajo en segundo plano** | CPU con el PC en uso e inactivo, espera, programas ocupados. |
 | **⑤** | **Omitir archivos de más de (MB)** | Por encima de este límite los archivos van a **Archivos grandes**. |
-| **⑥** | **Tamaño de la interfaz (%) — no sigue el zoom de Windows** | Agranda o reduce toda la ventana. |
+| **⑥** | **Tamaño de la interfaz (%) — 100 = como el zoom de Windows** | 100 = como las demás aplicaciones de Windows; más amplía, menos reduce. |
 
 - **Inicio**: inicio con Windows (vale al momento).
 - **Añadir a DocIndexer**: añade la opción al menú del botón derecho de las carpetas en el Explorador de archivos; se aplica enseguida, sin Guardar (ver el capítulo 14).
 - **Búsqueda rápida**: el atajo de teclado, por ejemplo `ctrl+alt+d`, `ctrl+shift+f` o `win+alt+d`; vacío = desactivada. Si otro programa ya usa el atajo aparece un aviso.
-- **Trabajo en segundo plano**: CPU máxima mientras usa el PC y con el PC inactivo, tras cuántos minutos el PC se considera inactivo, a partir de qué carga de los demás programas DocIndexer espera, hilos OCR, cada cuántas horas se vuelven a comprobar todas las carpetas, tamaño máximo de los archivos (los mayores van a **Archivos grandes**), tamaño de la interfaz (en %, independiente del zoom de Windows; vale desde el próximo inicio). Los primeros valores cambian también con el control del Monitor.
+- **Trabajo en segundo plano**: CPU máxima mientras usa el PC y con el PC inactivo, tras cuántos minutos el PC se considera inactivo, a partir de qué carga de los demás programas DocIndexer espera, hilos OCR, cada cuántas horas se vuelven a comprobar todas las carpetas, tamaño máximo de los archivos (los mayores van a **Archivos grandes**), tamaño de la interfaz (en %, 100 = como el zoom de Windows, es decir, el mismo tamaño que las demás aplicaciones; vale desde el próximo inicio). Los primeros valores cambian también con el control del Monitor.
 - **Módulos adicionales**: metadatos con ExifTool, texto de los archivos dentro de comprimidos (7-Zip), bases de datos SQLite, dBASE/FoxPro y Access. Cada módulo guarda sus datos aparte; en Búsqueda elige en cuáles buscar.
 - **OCR (RapidOCR)**: el modelo. **Automático** lee la primera página escaneada con el modelo latino y, si el resultado es dudoso, prueba los demás modelos descargados y se queda con el que lee mejor. Una **resolución OCR (DPI)** más alta lee mejor los caracteres pequeños pero es más lenta. **Probar OCR** hace una prueba.
 - **Bases de datos SQLite**: el archivo de la base de datos.
@@ -420,6 +435,8 @@ Si abre DocIndexer una segunda vez no arranca otra copia: se muestra la ventana 
 
 Con la opción **Añadir a DocIndexer** activada (Ajustes › Configuración › Inicio), el clic derecho sobre una carpeta en el Explorador de archivos muestra **Añadir a DocIndexer**: la carpeta se suma a las carpetas vigiladas y la indexación empieza enseguida, aunque DocIndexer ya estuviera abierto. En Windows 11 la opción está en «Mostrar más opciones» (o Mayús+F10). Si la carpeta ya está vigilada, o está dentro de una carpeta vigilada, DocIndexer lo indica y no cambia nada; si contiene carpetas ya vigiladas, ocupa su lugar. No se necesitan permisos de administrador.
 
+**En varios PC.** La entrada del botón derecho y el inicio con Windows se guardan en el Windows del PC que usa, para su usuario. Si usa DocIndexer desde un disco externo, vuelva a activarlos en cada PC en **Ajustes › Configuración › Inicio**. Si en el mismo PC el programa cambia de carpeta o de letra de disco, la entrada del botón derecho se actualiza sola en el siguiente inicio.
+
 ## 15. Problemas frecuentes
 
 - **No se encuentra un documento.** Compruebe en el Monitor que la indexación ha terminado; en Documentos busque el archivo por nombre y mire su estado (*En cola*, *Omitidos*, *Errores*). Compruebe que la carpeta está supervisada y que la extensión está entre las incluidas.
@@ -429,4 +446,6 @@ Con la opción **Añadir a DocIndexer** activada (Ajustes › Configuración ›
 - **La indexación es lenta.** Mueva el control hacia la derecha; con el PC inactivo DocIndexer acelera solo.
 - **Un archivo muy grande no aparece.** Está en **Documentos › Archivos grandes**, esperando su aprobación.
 - **El atajo de la búsqueda rápida no funciona.** Lo usa otro programa: elija otro en Ajustes › Configuración.
-- **Llevar DocIndexer a otro PC.** Copie la carpeta entera del programa, o cree una copia de seguridad y restáurela en el nuevo PC.
+- **Llevar DocIndexer a otro PC.** Copie la carpeta entera del programa, o cree una copia de seguridad y restáurela en el nuevo PC. Después, si los necesita, vuelva a activar **Iniciar con Windows** y **Añadir a DocIndexer**.
+- **El disco externo tiene otra letra.** No tiene que hacer nada: al iniciarse, DocIndexer actualiza las rutas por sí solo (vea el [capítulo 1](#1-antes-de-empezar)).
+- **El texto es demasiado pequeño o demasiado grande.** Cambie **Tamaño de la interfaz (%)** en Ajustes › Configuración: 100 es el tamaño de las demás aplicaciones de Windows. Vale desde el próximo inicio.

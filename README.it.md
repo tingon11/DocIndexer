@@ -50,14 +50,17 @@ quello già attivo.
 ## Importanza e note
 
 Nell'anteprima, sotto il nome del file, ogni documento può avere un **colore di importanza** (azzurro,
-verde, giallo, arancio, rosso) e una **nota**. Restano legati al file anche se viene spostato, rinominato o
-modificato. La scheda **Importanti** elenca i documenti colorati (prima i più importanti, con la nota), gli
+verde, giallo, arancio, rosso) e una **nota**. Appartengono al contenuto del file (hash SHA-256), non al
+percorso: seguono il file se viene spostato o rinominato (anche a DocIndexer chiuso o su un altro disco), le
+copie identiche li condividono e restano se il file viene modificato. La scheda **Importanti** elenca i documenti colorati (prima i più importanti, con la nota), gli
 elenchi mostrano il colore sulla riga e la ricerca ha l'opzione **solo documenti importanti**.
 
 Tutti gli elenchi di file mostrano la data di **creazione** e di modifica e si ordinano cliccando
 l'intestazione della colonna (A-Z, un altro clic Z-A). Oltre ai nomi di cartella da saltare ovunque, si
 possono escludere **sottocartelle precise** per percorso (es. `Documents\garbage`). La **dimensione
-dell'interfaccia** è un'impostazione (100% di base) e non segue lo zoom di Windows.
+dell'interfaccia** è un'impostazione che si somma allo zoom di Windows (100% = come le altre app di Windows).
+Un clic sulla cella **Cartella** in Ricerca, Documenti e Importanti apre Esplora file con il file selezionato.
+Se si tolgono tutte le cartelle monitorate l'indice si svuota e il Monitor si azzera.
 
 ## Moduli aggiuntivi
 
@@ -131,6 +134,14 @@ usa quello che legge meglio per tutto il documento (per esempio una scansione in
 - **Avvio con Windows**: interruttore nella scheda Monitor, voce con la spunta nel menu dell'icona vicino
   all'orologio, oppure Impostazioni > Configurazione. Vale subito (chiave Run dell'utente, senza permessi di
   amministratore).
+- **Aggiungi a DocIndexer** nel menu del tasto destro di Esplora file su cartelle e dischi (Impostazioni >
+  Configurazione > Avvio): aggiunge la cartella a quelle monitorate e la indicizza. Registrata in HKCU, senza
+  permessi di amministratore; su Windows 11 è in «Mostra altre opzioni».
+- **Uso portatile**: programma, `config.json` e database stanno nella stessa cartella, quindi DocIndexer può
+  girare da un disco esterno insieme alle cartelle che indicizza. Se su un altro PC il disco prende un'altra
+  lettera (E: -> F:), all'avvio tutti i percorsi di quel disco (cartelle monitorate, esclusioni, ricerche
+  salvate, database) vengono riscritti e una riga nel registro del Monitor lo segnala. L'avvio con Windows e
+  la voce del tasto destro stanno nel registro di Windows: vanno riattivati su ogni PC.
 - **Backup**: Impostazioni > Backup crea uno .zip con il database (indice, note, colori di importanza), le
   impostazioni, i pattern regex e le ricerche salvate, anche mentre l'indicizzazione lavora. Il ripristino li
   sostituisce e riavvia DocIndexer; il database precedente resta come `.before-restore`.

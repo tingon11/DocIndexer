@@ -29,6 +29,14 @@ DocIndexer keeps an index of the text of the documents in the folders you choose
 - The main OCR model (Latin alphabet plus Chinese and Japanese) is already included. Other alphabets and the optional tools (ExifTool for metadata, 7-Zip for archives) are downloaded from **Settings › External tools** (see [chapter 13](#13-settings)).
 - Documents are never moved, copied or changed.
 
+### Portable use on an external drive
+
+DocIndexer can live on an external drive or a USB stick together with the folders it indexes: program, settings (`config.json`) and database sit in the same folder and travel together. There is nothing to switch on: portable mode is automatic.
+
+- If on another PC the drive gets a different letter (for example it was **E:** and now it is **F:**), DocIndexer notices at startup and updates every path on that drive by itself: monitored folders, excluded subfolders, saved searches and the index. It does not start over: the text already read, the importance colours and the notes are kept. In the Monitor **Log** a line shows the old and new letter and how many paths were updated.
+- Folders on other drives (for example **C:**) are left as they are. If a monitored drive is not connected, its files stay in the index and are checked again when it is back.
+- **Start with Windows** and the right-click **Add to DocIndexer** entry are stored in Windows, not in the program folder: on each PC turn them on again in **Settings › Configuration › Startup** (see [chapter 14](#14-icon-next-to-the-clock-and-starting-with-windows)).
+
 ## 2. First start: setup wizard
 
 ### Language and terms of use
@@ -129,6 +137,8 @@ The Monitor shows how far indexing has got.
 
 How it works: first it counts the files, then it computes a fingerprint of each file's content (SHA-256) and extracts the text. A file identical to one already read is not analysed again; a moved or renamed file only changes its path in the index; a deleted file is removed.
 
+If you remove all monitored folders, DocIndexer removes their files from the index and the Monitor resets: chart, counters and progress start again from zero until you add a new folder.
+
 ## 5. Indexing resources and temperatures
 
 In the Monitor, the **Resources for indexing** panel decides how much of the PC DocIndexer may use.
@@ -199,6 +209,8 @@ The **Resources used by DocIndexer** panel shows the CPU and RAM used by the pro
 
 **The preview** on the right shows the real page of the document with the matches framed: the arrows change page, **−**, **Fit** and **+** change the zoom (the mouse wheel too), **◀ Match** and **Match ▶** jump from one hit to the next, **Open original** (or a double click on the result) opens the file with its program. For Office documents the preview is prepared with Office and may take a few seconds.
 
+**Opening the folder of a result.** A click on the **Folder** cell of a result opens the folder in File Explorer with the file already selected. The same works in the **Documents** and **Important** tabs.
+
 ### No exact results
 
 If a search finds nothing, DocIndexer tries again by itself, allowing one typing or OCR error per word. In that case a red notice appears above the results and blinks a few times: **No exact results: showing those with 1 typing or OCR error**. Check the results: they may contain words similar to the one you searched for.
@@ -252,7 +264,9 @@ A regular expression (regex) searches for a *pattern* instead of a word: for exa
 
 ## 9. Importance and notes
 
-In the preview, under the file name, every document can have an **importance colour** (light blue, green, yellow, orange, red, from least to most important; **None** removes it) and a **note** written by you (**Save note**, **Delete note**). Colour and note stay attached to the file even if it is moved, renamed or changed.
+In the preview, under the file name, every document can have an **importance colour** (light blue, green, yellow, orange, red, from least to most important; **None** removes it) and a **note** written by you (**Save note**, **Delete note**).
+
+Colour and note belong to the **content** of the file (its SHA-256 fingerprint), not to its path. If you move or rename the file, even while DocIndexer is closed or onto another drive, they come back as soon as the file is checked again. Identical copies of the same file share the same colour and note: change them on one copy and they change on all of them. If you edit the file, colour and note stay.
 
 ![Important](07-important.png)
 
@@ -286,6 +300,7 @@ The **Documents** tab lists all indexed files.
 - **All / Indexed / Queued / Skipped / Errors**: filters by status. **Folder** filters by monitored folder. **Refresh** reloads the list.
 - The columns show importance, name, folder, type, status, language, pages, pages read with OCR, characters, creation and modification date and SHA-256 fingerprint. Clicking a header sorts; hovering over a truncated cell shows the full text.
 - You can select several rows (Ctrl or Shift + click, Ctrl+A). **Show in Explorer** opens the file's folder, **Re-analyse** reads the selected files again, **Export...** saves the list. A double click opens the file.
+- A click on the **Folder** cell opens the folder in File Explorer with the file selected (in the **Important** tab too).
 
 **Large files.** Files larger than the set limit (200 MB by default) are not analysed automatically: the **Large files** button turns orange and shows how many are waiting.
 
@@ -372,12 +387,12 @@ Changes apply only after **Save**. **Discard changes** goes back to the saved se
 | **③** | **Keyboard shortcut** | The quick search keys (empty = off). |
 | **④** | **Background work** | CPU with the PC in use and idle, waiting time, busy programs. |
 | **⑤** | **Skip files larger than (MB)** | Above this limit files go to **Large files**. |
-| **⑥** | **Interface size (%) — does not follow Windows zoom** | Enlarges or shrinks the whole window. |
+| **⑥** | **Interface size (%) — 100 = same as the Windows zoom** | 100 = same as other Windows apps; higher enlarges, lower shrinks. |
 
 - **Startup**: start with Windows (applies immediately).
 - **Add to DocIndexer**: adds the item to the right-click menu of folders in File Explorer; applies immediately, without Save (see chapter 14).
 - **Quick search**: the keyboard shortcut, for example `ctrl+alt+d`, `ctrl+shift+f` or `win+alt+d`; empty = off. If the shortcut is already used by another program, a warning appears.
-- **Background work**: maximum CPU while you use the PC and when it is idle, after how many minutes the PC counts as idle, above which load of other programs DocIndexer waits, OCR threads, how often (hours) to recheck all folders, maximum file size (larger files go to **Large files**), interface size (in %, independent of the Windows zoom; applies from the next start). The first values also change with the Monitor slider.
+- **Background work**: maximum CPU while you use the PC and when it is idle, after how many minutes the PC counts as idle, above which load of other programs DocIndexer waits, OCR threads, how often (hours) to recheck all folders, maximum file size (larger files go to **Large files**), interface size (in %, 100 = same as the Windows zoom, that is the same size as other apps; applies from the next start). The first values also change with the Monitor slider.
 - **Add-on modules**: metadata with ExifTool, text of files inside archives (7-Zip), SQLite, dBASE/FoxPro and Access databases. Each module keeps its data separately; in Search you choose which to search.
 - **OCR (RapidOCR)**: the model. **Automatic** reads the first scanned page with the Latin model and, if the result is uncertain, tries the other downloaded models and keeps the one that reads best. A higher **OCR resolution (DPI)** reads small characters better but is slower. **Test OCR** runs a check.
 - **SQLite databases**: the database file.
@@ -420,6 +435,8 @@ If you start DocIndexer a second time no new copy starts: the window of the one 
 
 With the **Add to DocIndexer** option on (Settings › Configuration › Startup), right-clicking a folder in File Explorer shows **Add to DocIndexer**: the folder joins the monitored folders and indexing starts at once, even if DocIndexer was already open. On Windows 11 the item is under "Show more options" (or Shift+F10). If the folder is already monitored, or lies inside a monitored folder, DocIndexer says so and changes nothing; if it contains folders that are already monitored, it takes their place. No administrator rights are needed.
 
+**On several PCs.** The right-click entry and starting with Windows are stored in the Windows of the PC in use, for your user. If you run DocIndexer from an external drive, turn them on again on each PC in **Settings › Configuration › Startup**. If on the same PC the program moves to another folder or drive letter, the right-click entry updates itself at the next start.
+
 ## 15. Common problems
 
 - **A document cannot be found.** Check in the Monitor that indexing has finished; in Documents look for the file by name and check its status (*Queued*, *Skipped*, *Errors*). Make sure the folder is monitored and the extension is among the included ones.
@@ -429,4 +446,6 @@ With the **Add to DocIndexer** option on (Settings › Configuration › Startup
 - **Indexing is slow.** Move the slider to the right; remember that when the PC is idle DocIndexer speeds up by itself.
 - **A very large file does not appear.** It is in **Documents › Large files**, waiting for your approval.
 - **The quick search shortcut does not work.** Another program is using it: choose another one in Settings › Configuration.
-- **Moving DocIndexer to another PC.** Copy the whole program folder, or create a backup and restore it on the new PC.
+- **Moving DocIndexer to another PC.** Copy the whole program folder, or create a backup and restore it on the new PC. Then, if you need them, turn **Start with Windows** and **Add to DocIndexer** on again.
+- **The external drive has a different letter.** Nothing to do: at startup DocIndexer updates the paths by itself (see [chapter 1](#1-before-you-start)).
+- **The text is too small or too large.** Change **Interface size (%)** in Settings › Configuration: 100 is the size of other Windows apps. It applies from the next start.
