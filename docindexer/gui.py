@@ -228,6 +228,21 @@ def reveal(path):
         messagebox.showerror(tr("Errore"), tr("Impossibile aprire il file:\n{exc}", exc=exc))
 
 
+_last_reveal = {"path": None, "at": 0.0}
+
+
+def reveal_once(path):
+    """reveal() for a click on the Folder column: both clicks of a double-click arrive here,
+    so the same file within a second opens a single Explorer window."""
+    import time as _t
+
+    now = _t.monotonic()
+    if _last_reveal["path"] == path and now - _last_reveal["at"] < 1.0:
+        return
+    _last_reveal.update(path=path, at=now)
+    reveal(path)
+
+
 def open_file(path):
     try:
         os.startfile(path)  # type: ignore[attr-defined]
@@ -1099,8 +1114,22 @@ class ResultsList(tk.Frame):
         return iid
 
     # ------------------------------------------------------------ tooltip
+    FOLDER_COL = 2      # index of "Cartella" in COLUMNS: a click there opens the folder in Explorer
+
+    def _cell_at(self, e) -> tuple[int, int] | None:
+        """(row line, column index) under the mouse, or None outside the rows."""
+        idx = self.text.index(f"@{e.x},{e.y}")
+        line = int(idx.split(".")[0])
+        bbox = self.text.bbox(idx)
+        if not (1 <= line <= len(self._items)) or not bbox or e.y > bbox[1] + bbox[3]:
+            return None
+        return line, self.text.get(f"{line}.0", idx).count("\t")
+
     def _on_motion(self, e):
         """Sul nome (o sulla colonna) troncato mostra il valore completo in un tooltip."""
+        cell = self._cell_at(e)
+        on_folder = bool(cell and cell[1] == self.FOLDER_COL and self._paths[cell[0] - 1])
+        self.text.configure(cursor="hand2" if on_folder else "arrow")
         idx = self.text.index(f"@{e.x},{e.y}")
         line, col = (int(x) for x in idx.split("."))
         bbox = self.text.bbox(idx)
@@ -1166,9 +1195,15 @@ class ResultsList(tk.Frame):
         if 1 <= line <= len(self._items) and self._items[line - 1] != self._sel:
             self.selection_set(self._items[line - 1])
         self.text.focus_set()
+        cell = self._cell_at(e)
+        if cell and cell[1] == self.FOLDER_COL and self._paths[cell[0] - 1]:
+            reveal_once(self._paths[cell[0] - 1])     # folder opened in Explorer, file selected
         return "break"
 
     def _double(self, e):
+        cell = self._cell_at(e)
+        if cell and cell[1] == self.FOLDER_COL:
+            return "break"          # the first click already opened the folder
         self._click(e)
         self.event_generate("<<ResultOpen>>")
         return "break"
@@ -2025,7 +2060,9 @@ class DocumentsPage(ctk.CTkFrame):
         attach_tree_tooltip(self.tree, self._tooltip)
         self.tree.container.pack(fill="both", expand=True)
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
-        self.tree.bind("<Double-1>", lambda e: self.preview.open_original())
+        self.tree.bind("<Double-1>", self._double)
+        self.tree.bind("<ButtonRelease-1>", self._folder_click, add="+")
+        self.tree.bind("<Motion>", self._folder_cursor, add="+")
         self.tree.bind("<Control-a>", lambda e: (self.tree.selection_set(self.tree.get_children()), "break")[1])
         self.count = ctk.CTkLabel(left, text="", anchor="w")
         self.count.pack(fill="x", pady=(6, 0))
@@ -2092,6 +2129,36 @@ class DocumentsPage(ctk.CTkFrame):
                  "modified": fmt_time(r["mtime"]), "hash": r["sha256"], "lang": lang_mod.name(r.get("lang"))}
         return tuple(cells[k] for k, _t, _w in (self.IMPORTANT_COLUMNS if self.important else self.COLUMNS)
                      if k != "level")    # l'importanza è la colonna #0, con i pallini colorati
+
+    def _folder_row(self, e):
+        """Row data when the mouse is on a cell of the Folder column, else None."""
+        if self.tree.identify_region(e.x, e.y) != "cell":
+            return None
+        col, iid = self.tree.identify_column(e.x), self.tree.identify_row(e.y)
+        if not iid or col == "#0":
+            return None
+        cols = self.tree["columns"]
+        ci = int(col[1:]) - 1
+        if ci >= len(cols) or cols[ci] != "folder":
+            return None
+        return self.rows.get(iid)
+
+    def _folder_click(self, e):
+        """A click on the Folder cell opens the folder in Explorer with the file selected
+        (not with Ctrl/Shift, which extend the selection)."""
+        if e.state & 0x0005:
+            return
+        r = self._folder_row(e)
+        if r:
+            reveal_once(r["path"])
+
+    def _folder_cursor(self, e):
+        self.tree.configure(cursor="hand2" if self._folder_row(e) else "")
+
+    def _double(self, e):
+        if self._folder_row(e):
+            return "break"          # the click already opened the folder
+        self.preview.open_original()
 
     def _tooltip(self, iid, col):
         r = self.rows.get(iid)
@@ -2931,8 +2998,9 @@ class App(ctk.CTk):
         """Colore o nota cambiati: la riga del file si aggiorna sul posto negli elenchi (senza ricaricarli,
         così la selezione e l'anteprima restano dove sono); la scheda Importanti si ricarica quando si apre."""
         level, note = self.db.annotation(path_id)
-        for key in ("documents", "important"):
-            self.pages[key].update_row(path_id, level, note)
+        for pid in self.db.same_content_ids(path_id):    # copies of the same content share it
+            for key in ("documents", "important"):
+                self.pages[key].update_row(pid, level, note)
 
     def call_in_gui(self, fn, *args):
         """Da altri thread (icona, istanza unica): esegue fn nel thread dell'interfaccia."""
