@@ -19,7 +19,7 @@ from PIL import Image
 
 from .config import RESOURCE_LEVELS, AppConfig, portable
 from .db import Database
-from . import __version__, ocr, preview, shellmenu, theme, tools
+from . import __version__, ocr, portable_drive, preview, shellmenu, theme, tools
 from .i18n import LANGUAGES, language, set_language, tr
 from .textnorm import fold
 from . import daemon_ui, frameless
@@ -2703,6 +2703,8 @@ class App(ctk.CTk):
 
     def __init__(self, background: bool = False, add_folder: str | None = None):
         self.cfg = AppConfig.load()
+        # portable mode: external disk with a different letter (E: -> F:) -> stored paths follow it
+        self.relocated = portable_drive.relocate(self.cfg)
         # cartella da aggiungere chiesta dal tasto destro di Esplora file (--add-folder), con nessun DocIndexer aperto
         self.pending_folder = add_folder
         self.indexer: Indexer | None = None
@@ -3010,6 +3012,11 @@ class App(ctk.CTk):
         if self.indexer is None:
             self._ensure_ocr_model()
             self.indexer = Indexer(self.cfg, self.db)
+            if self.relocated:
+                old, new, n = self.relocated
+                self.indexer.log(tr("Disco del programma passato da {old} a {new}: aggiornati {n} percorsi.",
+                                    old=old, new=new, n=n))
+                self.relocated = None
             self.indexer.start()
         else:
             self.indexer.settings_changed()

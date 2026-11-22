@@ -190,6 +190,9 @@ class AppConfig:
     # termini d'uso accettati alla prima apertura (terms.TERMS_VERSION; vuoto = mai) e quando
     terms_accepted: str = ""
     terms_accepted_at: str = ""
+    # drive the program ran from last time ("E:"): when the external disk gets another letter on
+    # another PC, portable_drive.relocate() moves the stored paths of that disk to the new letter
+    app_drive: str = ""
 
     # ------------------------------------------------------------ percorsi
     @property
